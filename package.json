@@ -1,12 +1,12 @@
 {
 	"name": "com.dragonresonance.toolset",
-	"version": "2.1.7",
+	"version": "2.2.0",
 	"displayName": "Dragon Resonance ToolSet",
 	"description": "",
-	"unity": "2021.3",
+	"unity": "6000.0",
 	"license": "Apache-2.0",
 	"dependencies": {
-		"com.dragonresonance.devkit": "2.7.9"
+		"com.dragonresonance.devkit": "2.10.0"
 	},
 	"keywords": [
 		"scripting"

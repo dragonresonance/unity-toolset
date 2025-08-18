@@ -2,7 +2,7 @@
     "name": "DragonResonance.ToolSet",
     "rootNamespace": "DragonResonance",
     "references": [
-        "GUID:b78f24bf1f52eab40801822f1fb060da"
+        "DragonResonance.DevKit"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
