@@ -8,20 +8,20 @@
 - Open the **Unity Package Manager**.
 - Click the dropdown **+** button and select *Add package from git URL...*.
 - Add one of the following mirrors:
-  - GitHub: [```https://github.com/dragonresonance/unity-toolset-package.git#master```](https://github.com/dragonresonance/unity-toolset-package.git#master)
-  - GitLab: [```https://gitlab.com/dragonresonance/unity-toolset-package.git#master```](https://gitlab.com/dragonresonance/unity-toolset-package.git#master)
+  - GitHub: [```https://github.com/dragonresonance/unity-toolset.git#master```](https://github.com/dragonresonance/unity-toolset.git#master)
+  - GitLab: [```https://gitlab.com/dragonresonance/unity-toolset.git#master```](https://gitlab.com/dragonresonance/unity-toolset.git#master)
 
 
 ## Dependencies
 
 - Dragon Resonance DevKit:
-  - GitHub: [```https://github.com/dragonresonance/unity-devkit-package.git#master```](https://github.com/dragonresonance/unity-devkit-package.git#master)
-  - GitLab: [```https://gitlab.com/dragonresonance/unity-devkit-package.git#master```](https://gitlab.com/dragonresonance/unity-devkit-package.git#master)
+  - GitHub: [```https://github.com/dragonresonance/unity-devkit.git#master```](https://github.com/dragonresonance/unity-devkit.git#master)
+  - GitLab: [```https://gitlab.com/dragonresonance/unity-devkit.git#master```](https://gitlab.com/dragonresonance/unity-devkit.git#master)
 
 
 ## Issues
 
-Please use the [GitHub Issues](https://github.com/dragonresonance/unity-toolset-package/issues) dedicated site.
+Please use the [GitHub Issues](https://github.com/dragonresonance/unity-toolset/issues) dedicated site.
 
 
 ## License
