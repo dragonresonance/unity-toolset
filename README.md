@@ -3,7 +3,15 @@
 ![Logo](./Logo.png)
 
 
-## Installation
+## Installation [![openupm](https://img.shields.io/npm/v/com.dragonresonance.toolset?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.dragonresonance.toolset/)
+
+### OpenUPM 
+
+- Go to **OpenUPM** and follow the instructions:
+  - [```https://openupm.com/packages/com.dragonresonance.toolset/```](https://openupm.com/packages/com.dragonresonance.toolset/)
+
+
+### Unity Package Manager
 
 - Open the **Unity Package Manager**.
 - Click the dropdown **+** button and select *Add package from git URL...*.
