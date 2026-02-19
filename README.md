@@ -2,6 +2,9 @@
 
 ![Logo](./Logo.png)
 
+A complementary package of Unity tools that expands the main package with advanced editor and runtime goodies.
+> I develop, maintain and use this package for my own projects, so it’s continuously dogfooded in real-world development and updated frequently.
+ 
 
 ## Installation [![openupm](https://img.shields.io/npm/v/com.dragonresonance.toolset?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.dragonresonance.toolset/)
 
