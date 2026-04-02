@@ -53,7 +53,7 @@ namespace DragonResonance.Localization
 /*                                                                              */
 /*           David Tabernero M.  <https://github.com/davidtabernerom>           */
 /*           Dragon Resonance    <https://github.com/dragonresonance>           */
-/*                  Copyright © 2021-2025. All rights reserved.                 */
+/*                  Copyright © 2021-2026. All rights reserved.                 */
 /*                Licensed under the Apache License, Version 2.0.               */
 /*                         See LICENSE.md for more info.                        */
 /*       ________________________________________________________________       */
