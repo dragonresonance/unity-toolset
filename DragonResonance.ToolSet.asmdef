@@ -2,7 +2,10 @@
     "name": "DragonResonance.ToolSet",
     "rootNamespace": "DragonResonance",
     "references": [
-        "DragonResonance.DevKit"
+        "DragonResonance.DevKit",
+        "Tabernero.SimpleJSON",
+        "UniTask",
+        "UniTask.Linq"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -11,6 +14,17 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "dev.tabernero.simplejson",
+            "expression": "",
+            "define": "SIMPLEJSON"
+        },
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "",
+            "define": "UNITASK"
+        }
+    ],
     "noEngineReferences": false
 }

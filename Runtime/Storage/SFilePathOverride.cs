@@ -1,28 +1,15 @@
-#if UNITY_EDITOR
-
-
 using System;
-using UnityEditor;
 
 
-namespace DragonResonance.Editor.Tools
+namespace DragonResonance.Storage
 {
 	[Serializable]
-	public struct SBuildConfiguration
+	public struct SFilePathOverride
 	{
-		public string alias;
-		public bool included;
-
-		public BuildTarget target;
-		public StandaloneBuildSubtarget subtarget;
-		public BuildOptions options;
-		public string locationPathName;
-		public string[] extraScriptingDefines;
+		public string FilePath;
+		public string[] Keys;
 	}
 }
-
-
-#endif
 
 
 /*       ________________________________________________________________       */

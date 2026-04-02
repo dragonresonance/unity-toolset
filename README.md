@@ -28,6 +28,8 @@ A complementary package of Unity tools that expands the main package with advanc
 - Dragon Resonance DevKit:
   - GitHub: [```https://github.com/dragonresonance/unity-devkit.git#master```](https://github.com/dragonresonance/unity-devkit.git#master)
   - GitLab: [```https://gitlab.com/dragonresonance/unity-devkit.git#master```](https://gitlab.com/dragonresonance/unity-devkit.git#master)
+- SimpleJSON: [```https://github.com/davidtabernerom/unity-simplejson.git#master```](https://github.com/davidtabernerom/unity-simplejson.git#master)
+- UniTask: [```https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask```](https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask)
 
 
 ## Issues
