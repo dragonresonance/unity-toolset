@@ -3,6 +3,7 @@
 
 using Cysharp.Threading.Tasks.Linq;
 using Cysharp.Threading.Tasks;
+using DragonResonance.Logging;
 using UnityEngine.Networking;
 
 
@@ -12,16 +13,16 @@ namespace DragonResonance.Localizer
 	{
 		#region Privates
 
-			private IUniTaskAsyncEnumerable<string> FetchResources()
+			private static IUniTaskAsyncEnumerable<string> FetchResources()
 			{
 				return UniTaskAsyncEnumerable.Create<string>(async (writer, token) =>
 				{
-					foreach (string source in _onlineSources) {
+					foreach (string source in Localizer.Settings.OnlineSources) {
 						using UnityWebRequest request = UnityWebRequest.Get(source);
 						await request.SendWebRequest().WithCancellation(token);
 
 						if (request.result != UnityWebRequest.Result.Success) {
-							Error($"Error {request.result} fetching the resource \"{source}\"");
+							HLogger.LogError($"Error {request.result} fetching the resource \"{source}\"");
 							continue;
 						}
 

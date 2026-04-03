@@ -35,7 +35,7 @@ namespace DragonResonance.Localizer
 		#region Publics
 
 			[ContextMenu(nameof(Localize))]
-			public void Localize() => Localizer.Instance.Localize(_localizationTemplate, OnLocalize).Forget();
+			public void Localize() => Localizer.Localize(_localizationTemplate, OnLocalize).Forget();
 
 		#endregion
 	}

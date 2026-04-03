@@ -2,35 +2,35 @@
 
 
 using Cysharp.Threading.Tasks;
-using DragonResonance.Behaviours;
+using DragonResonance.Logging;
 using PossumScream.Databases;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System;
 using UnityEngine.Events;
+using UnityEngine.Scripting;
 using UnityEngine;
 
 
 namespace DragonResonance.Localizer
 {
-	public partial class Localizer : PersistentSingletonPossumBehaviour<Localizer>
+	[Preserve]
+	public partial class Localizer
 	{
-		[SerializeField] private SystemLanguage _currentLanguage = SystemLanguage.English;
-		[SerializeField] private string[] _onlineSources = { };
-
-
-		private readonly UniTaskCompletionSource _resourceFetching = new();
-		private readonly DynamicSheet<string> _dataSheet = new();
+		private static readonly UniTaskCompletionSource _resourceFetching = new();
+		private static readonly DynamicSheet<string> _dataSheet = new();
 
 		public static event Action OnLanguageChange = null;
 
 
 		#region Events
 
-			private new async void Awake()
+			[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+			private static void Initialize() => OnStartup();
+
+			private static async void OnStartup()
 			{
-				base.Awake();
 				await foreach (string fileContent in FetchResources())
 					_dataSheet.TryJoinTSV(fileContent);
 				_resourceFetching.TrySetResult();
@@ -43,29 +43,29 @@ namespace DragonResonance.Localizer
 
 			public void ChangeLanguage(SystemLanguage language)
 			{
-				_currentLanguage = language;
+				Localizer.Settings.CurrentLanguage = language;
 				OnLanguageChange?.Invoke();
 			}
 
 
-			public async UniTaskVoid Localize(string rawText, UnityEvent<string> handler)
+			public static async UniTaskVoid Localize(string rawText, UnityEvent<string> handler)
 			{
 				await _resourceFetching.Task;
 				handler.Invoke(await Localize(rawText));
 			}
 
-			public async UniTask<string> Localize(string rawText)
+			public static async UniTask<string> Localize(string rawText)
 			{
 				await _resourceFetching.Task;
 				foreach (string key in GetKeys(rawText)) {
-					string language = _currentLanguage.ToString();
+					string language = Localizer.Settings.CurrentLanguage.ToString();
 					try {
 						string value = _dataSheet[key, language];
 						//Log($"key:{key}, value:{value}, language:{language}");
 						rawText = rawText.Replace($"{{{key}}}", value);
 					}
 					catch (ArgumentOutOfRangeException) {
-						Error($"Key {key} ({language}) not found");
+						HLogger.LogError($"Key {key} ({language}) not found");
 					}
 				}
 				return rawText;
@@ -76,14 +76,15 @@ namespace DragonResonance.Localizer
 
 		#region Privates
 
-			private IEnumerable<string> GetKeys(string rawText) => Regex.Matches(rawText, @"\{(\w+)\}").Select(match => match.Groups[1].Value);
+			private static IEnumerable<string> GetKeys(string rawText) =>
+				Regex.Matches(rawText, @"\{(\w+)\}").Select(match => match.Groups[1].Value);
 
 		#endregion
 
 
 		#region Properties
 
-			private LocalizerSettings Settings => LocalizerSettings.Instance;
+			private static LocalizerSettings Settings => LocalizerSettings.Instance;
 
 		#endregion
 	}
