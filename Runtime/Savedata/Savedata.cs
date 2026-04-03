@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System;
 using Tabernero.SimpleJSON;
+using UnityEngine.Scripting;
 using UnityEngine;
 
 
@@ -16,17 +17,12 @@ using UnityEngine;
 
 namespace DragonResonance.Savedata
 {
+	[Preserve]
 	public partial class Savedata : PersistentSingletonPossumBehaviour<Savedata>
 	{
-		[SerializeField] private bool _loadOnStart = true;
-		[SerializeField] private bool _useCompactData = false;
-		[SerializeField] private string _defaultFilePath = "savedata.json";
-		[SerializeField] private SFilePathOverride[] _overrides = { };
-
-
-		private bool _ready = false;
-		private readonly Dictionary<string, JSONNode> _data = new();
-		private readonly Dictionary<string, Action<JSONNode>> _events = new();
+		private static bool _ready = false;
+		private static readonly Dictionary<string, JSONNode> _data = new();
+		private static readonly Dictionary<string, Action<JSONNode>> _events = new();
 
 
 
@@ -34,9 +30,12 @@ namespace DragonResonance.Savedata
 		#region Events
 
 
-			private void Start()
+			[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+			private static void Initialize() => OnStartup();
+
+			private static void OnStartup()
 			{
-				if (_loadOnStart)
+				if (Savedata.Settings.LoadOnStart)
 					Load();
 			}
 
@@ -49,11 +48,10 @@ namespace DragonResonance.Savedata
 		#region Publics - Files
 
 
-			[ContextMenu(nameof(Load))]
-			public void Load()
+			public static void Load()
 			{
 				_data.Clear();
-				foreach (string filePath in this.FilePaths) {
+				foreach (string filePath in Savedata.FilePaths) {
 					string dataFilePath = GetOptimizedPersistentDataPath(filePath);
 					if (!File.Exists(dataFilePath)) return;
 
@@ -68,8 +66,7 @@ namespace DragonResonance.Savedata
 			}
 
 
-			[ContextMenu(nameof(Save))]
-			public void Save()
+			public static void Save()
 			{
 				HashSet<string> processedKeys = new();
 				JSONNode temporalJsonNode = null;
@@ -77,14 +74,16 @@ namespace DragonResonance.Savedata
 				if (!Directory.CreateDirectory(persistentDataPath).Exists) return;
 
 				// Overrides
-				foreach (SFilePathOverride savableOverride in _overrides) {
+				foreach (SFilePathOverride savableOverride in Savedata.Settings.Overrides) {
 					temporalJsonNode = JSONNode.New();
 					foreach (string key in savableOverride.Keys) {
 						if (_data.ContainsKey(key))
 							temporalJsonNode.Add(key, _data[key]);
 						processedKeys.Add(key);
 					}
-					File.WriteAllText(Path.Combine(persistentDataPath, savableOverride.FilePath), temporalJsonNode.ToString(_useCompactData));
+					File.WriteAllText(
+						Path.Combine(persistentDataPath, savableOverride.FilePath),
+						temporalJsonNode.ToString(Savedata.Settings.UseCompactData));
 				}
 
 				// Default
@@ -92,12 +91,14 @@ namespace DragonResonance.Savedata
 				foreach (KeyValuePair<string, JSONNode> keyValuePair in _data.Where(dataEntryPair => !processedKeys.Contains(dataEntryPair.Key))) {
 					temporalJsonNode.Add(keyValuePair.Key, keyValuePair.Value);
 				}
-				File.WriteAllText(Path.Combine(persistentDataPath, _defaultFilePath), temporalJsonNode.ToString(_useCompactData));
+				File.WriteAllText(
+					Path.Combine(persistentDataPath, Savedata.Settings.DefaultFilePath),
+					temporalJsonNode.ToString(Savedata.Settings.UseCompactData));
 			}
 
 
 			[ContextMenu(nameof(SaveReload))]
-			public void SaveReload()
+			public static void SaveReload()
 			{
 				Save();
 				Load();
@@ -112,13 +113,13 @@ namespace DragonResonance.Savedata
 		#region Publics - Data
 
 
-			public bool Get(string key, out JSONNode json)
+			public static bool Get(string key, out JSONNode json)
 			{
 				if (!_ready) Load();
 				return _data.TryGetValue(key, out json);
 			}
 
-			public void Set(string key, JSONNode json)
+			public static void Set(string key, JSONNode json)
 			{
 				_data.AddOrSet(key, json);
 				Publish(key, json);
@@ -133,7 +134,7 @@ namespace DragonResonance.Savedata
 		#region Publics - Events
 
 
-			public void Subscribe(string key, Action<JSONNode> handler)
+			public static void Subscribe(string key, Action<JSONNode> handler)
 			{
 				if (_events.TryGetValue(key, out Action<JSONNode> current))
 					_events[key] = current + handler;
@@ -141,7 +142,7 @@ namespace DragonResonance.Savedata
 					_events[key] = handler;
 			}
 
-			public void Unsubscribe(string key, Action<JSONNode> handler)
+			public static void Unsubscribe(string key, Action<JSONNode> handler)
 			{
 				if (_events.TryGetValue(key, out Action<JSONNode> current))
 					_events[key] = current - handler;
@@ -156,7 +157,7 @@ namespace DragonResonance.Savedata
 		#region Privates
 
 
-			private void Publish(string key, JSONNode eventData)
+			private static void Publish(string key, JSONNode eventData)
 			{
 				if (_events.TryGetValue(key, out Action<JSONNode> current))
 					current?.Invoke(eventData);
@@ -171,15 +172,15 @@ namespace DragonResonance.Savedata
 		#region Properties
 
 
-			private SavedataSettings Settings => SavedataSettings.Instance;
+			private static SavedataSettings Settings => SavedataSettings.Instance;
 
-			public bool Ready => _ready;
-			public bool UseCompactData => _useCompactData;
-			public string DefaultFilePath => _defaultFilePath;
-			public string OptimizedPersistentDataPath => GetOptimizedPersistentDataPath();
-			public Dictionary<string, JSONNode> Data => _data;
+			public static bool Ready => _ready;
+			public static Dictionary<string, JSONNode> Data => _data;
+			public static Dictionary<string, Action<JSONNode>> Events => _events;
 
-			public IEnumerable<string> FilePaths => _overrides.Select(savable => savable.FilePath).Prepend(_defaultFilePath);
+			public static IEnumerable<string> FilePaths => Savedata.Settings.Overrides
+				.Select(savable => savable.FilePath)
+				.Prepend(Savedata.Settings.DefaultFilePath);
 
 
 		#endregion

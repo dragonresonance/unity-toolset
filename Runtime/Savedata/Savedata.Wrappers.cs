@@ -11,12 +11,12 @@ namespace DragonResonance.Savedata
 {
 	public partial class Savedata
 	{
-		private readonly Dictionary<Delegate, Action<JSONNode>> _wrappers = new();
+		private static readonly Dictionary<Delegate, Action<JSONNode>> _wrappers = new();
 
 
 		#region Publics - Data
 
-			public bool Get<T>(out T data, T fallback = default) where T : struct, ISavableData
+			public static bool Get<T>(out T data, T fallback = default) where T : struct, ISavableData
 			{
 				data = fallback;
 
@@ -28,7 +28,7 @@ namespace DragonResonance.Savedata
 				return false;
 			}
 
-			public void Set<T>(T data) where T : struct, ISavableData
+			public static void Set<T>(T data) where T : struct, ISavableData
 			{
 				Set(data.Key, JSONNode.Parse(JsonUtility.ToJson(data)));
 			}
@@ -38,16 +38,16 @@ namespace DragonResonance.Savedata
 
 		#region Publics - Events
 
-			public void SubscribeAndReload<T>(Action<T> handler) where T : struct, ISavableData => SubscribeAndReload(typeof(T).Name, handler);
-			public void SubscribeAndReload<T>(string key, Action<T> handler) where T : struct, ISavableData
+			public static void SubscribeAndReload<T>(Action<T> handler) where T : struct, ISavableData => SubscribeAndReload(typeof(T).Name, handler);
+			public static void SubscribeAndReload<T>(string key, Action<T> handler) where T : struct, ISavableData
 			{
 				Subscribe(key, handler);
 				if (Get(out T data))
 					Set(data);
 			}
 
-			public void Subscribe<T>(Action<T> handler) where T : struct, ISavableData => Subscribe(typeof(T).Name, handler);
-			public void Subscribe<T>(string key, Action<T> handler) where T : struct, ISavableData
+			public static void Subscribe<T>(Action<T> handler) where T : struct, ISavableData => Subscribe(typeof(T).Name, handler);
+			public static void Subscribe<T>(string key, Action<T> handler) where T : struct, ISavableData
 			{
 				void Wrapper(JSONNode json) => handler.Invoke(JsonUtility.FromJson<T>(json.ToString()));
 
@@ -59,8 +59,8 @@ namespace DragonResonance.Savedata
 					_events[key] = Wrapper;
 			}
 
-			public void Unsubscribe<T>(Action<T> handler) where T : struct, ISavableData => Unsubscribe(typeof(T).Name, handler);
-			public void Unsubscribe<T>(string key, Action<T> handler) where T : struct, ISavableData
+			public static void Unsubscribe<T>(Action<T> handler) where T : struct, ISavableData => Unsubscribe(typeof(T).Name, handler);
+			public static void Unsubscribe<T>(string key, Action<T> handler) where T : struct, ISavableData
 			{
 				if (_events.TryGetValue(key, out Action<JSONNode> current)) {
 					if (_wrappers.TryGetValue(handler, out Action<JSONNode> wrapper))

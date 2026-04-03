@@ -9,9 +9,9 @@ namespace DragonResonance.Savedata
 	{
 		#region Publics
 
-			public string GetOptimizedPersistentDataPath() => GetOptimizedPersistentDataPath(".");
-			public string GetOptimizedPersistentDataPath(string path) => GetOptimizedPersistentDataPath(".", path);
-			public string GetOptimizedPersistentDataPath(string path, string filename)
+			public static string GetOptimizedPersistentDataPath() => GetOptimizedPersistentDataPath(".");
+			public static string GetOptimizedPersistentDataPath(string path) => GetOptimizedPersistentDataPath(".", path);
+			public static string GetOptimizedPersistentDataPath(string path, string filename)
 			{
 				string optimizedPersistentDataPath = Application.persistentDataPath;
 
