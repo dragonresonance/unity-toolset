@@ -20,6 +20,8 @@ namespace DragonResonance.Savedata
 	[Preserve]
 	public partial class Savedata : PersistentSingletonPossumBehaviour<Savedata>
 	{
+		private static SavedataSettings _settings => SavedataSettings.Instance;
+
 		private static bool _ready = false;
 		private static readonly Dictionary<string, JSONNode> _data = new();
 		private static readonly Dictionary<string, Action<JSONNode>> _events = new();
@@ -35,7 +37,7 @@ namespace DragonResonance.Savedata
 
 			private static void OnStartup()
 			{
-				if (Savedata.Settings.LoadOnStart)
+				if (_settings.LoadOnStart)
 					Load();
 			}
 
@@ -74,7 +76,7 @@ namespace DragonResonance.Savedata
 				if (!Directory.CreateDirectory(persistentDataPath).Exists) return;
 
 				// Overrides
-				foreach (SFilePathOverride savableOverride in Savedata.Settings.Overrides) {
+				foreach (SFilePathOverride savableOverride in _settings.Overrides) {
 					temporalJsonNode = JSONNode.New();
 					foreach (string key in savableOverride.Keys) {
 						if (_data.ContainsKey(key))
@@ -83,7 +85,7 @@ namespace DragonResonance.Savedata
 					}
 					File.WriteAllText(
 						Path.Combine(persistentDataPath, savableOverride.FilePath),
-						temporalJsonNode.ToString(Savedata.Settings.UseCompactData));
+						temporalJsonNode.ToString(_settings.UseCompactData));
 				}
 
 				// Default
@@ -92,8 +94,8 @@ namespace DragonResonance.Savedata
 					temporalJsonNode.Add(keyValuePair.Key, keyValuePair.Value);
 				}
 				File.WriteAllText(
-					Path.Combine(persistentDataPath, Savedata.Settings.DefaultFilePath),
-					temporalJsonNode.ToString(Savedata.Settings.UseCompactData));
+					Path.Combine(persistentDataPath, _settings.DefaultFilePath),
+					temporalJsonNode.ToString(_settings.UseCompactData));
 			}
 
 
@@ -172,15 +174,13 @@ namespace DragonResonance.Savedata
 		#region Properties
 
 
-			private static SavedataSettings Settings => SavedataSettings.Instance;
-
 			public static bool Ready => _ready;
 			public static Dictionary<string, JSONNode> Data => _data;
 			public static Dictionary<string, Action<JSONNode>> Events => _events;
 
-			public static IEnumerable<string> FilePaths => Savedata.Settings.Overrides
+			public static IEnumerable<string> FilePaths => _settings.Overrides
 				.Select(savable => savable.FilePath)
-				.Prepend(Savedata.Settings.DefaultFilePath);
+				.Prepend(_settings.DefaultFilePath);
 
 
 		#endregion

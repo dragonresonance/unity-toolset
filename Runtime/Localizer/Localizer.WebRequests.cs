@@ -17,7 +17,7 @@ namespace DragonResonance.Localizer
 			{
 				return UniTaskAsyncEnumerable.Create<string>(async (writer, token) =>
 				{
-					foreach (string source in Localizer.Settings.OnlineSources) {
+					foreach (string source in _settings.OnlineSources) {
 						using UnityWebRequest request = UnityWebRequest.Get(source);
 						await request.SendWebRequest().WithCancellation(token);
 

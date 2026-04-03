@@ -18,6 +18,7 @@ namespace DragonResonance.Localizer
 	[Preserve]
 	public partial class Localizer
 	{
+		private static LocalizerSettings _settings => LocalizerSettings.Instance;
 		private static readonly UniTaskCompletionSource _resourceFetching = new();
 		private static readonly DynamicSheet<string> _dataSheet = new();
 
@@ -43,7 +44,7 @@ namespace DragonResonance.Localizer
 
 			public void ChangeLanguage(SystemLanguage language)
 			{
-				Localizer.Settings.CurrentLanguage = language;
+				_settings.CurrentLanguage = language;
 				OnLanguageChange?.Invoke();
 			}
 
@@ -58,7 +59,7 @@ namespace DragonResonance.Localizer
 			{
 				await _resourceFetching.Task;
 				foreach (string key in GetKeys(rawText)) {
-					string language = Localizer.Settings.CurrentLanguage.ToString();
+					string language = _settings.CurrentLanguage.ToString();
 					try {
 						string value = _dataSheet[key, language];
 						//Log($"key:{key}, value:{value}, language:{language}");
@@ -78,13 +79,6 @@ namespace DragonResonance.Localizer
 
 			private static IEnumerable<string> GetKeys(string rawText) =>
 				Regex.Matches(rawText, @"\{(\w+)\}").Select(match => match.Groups[1].Value);
-
-		#endregion
-
-
-		#region Properties
-
-			private static LocalizerSettings Settings => LocalizerSettings.Instance;
 
 		#endregion
 	}
