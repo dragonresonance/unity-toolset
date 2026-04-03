@@ -1,13 +1,8 @@
-using System;
-
-
-namespace DragonResonance.Storage
+namespace DragonResonance.Savedata
 {
-	[Serializable]
-	public struct SFilePathOverride
+	public interface ISavableData
 	{
-		public string FilePath;
-		public string[] Keys;
+		public string Key { get; }
 	}
 }
 

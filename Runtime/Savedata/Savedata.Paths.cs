@@ -1,41 +1,40 @@
-#if UNITASK
+using System.IO;
+using System;
+using UnityEngine;
 
 
-using Cysharp.Threading.Tasks.Linq;
-using Cysharp.Threading.Tasks;
-using UnityEngine.Networking;
-
-
-namespace DragonResonance.Localization
+namespace DragonResonance.Savedata
 {
-	public partial class LocalizationManager	// WebRequests
+	public partial class Savedata
 	{
-		#region Privates
+		#region Publics
 
-			private IUniTaskAsyncEnumerable<string> FetchResources()
+			public string GetOptimizedPersistentDataPath() => GetOptimizedPersistentDataPath(".");
+			public string GetOptimizedPersistentDataPath(string path) => GetOptimizedPersistentDataPath(".", path);
+			public string GetOptimizedPersistentDataPath(string path, string filename)
 			{
-				return UniTaskAsyncEnumerable.Create<string>(async (writer, token) =>
-				{
-					foreach (string source in _onlineSources) {
-						using UnityWebRequest request = UnityWebRequest.Get(source);
-						await request.SendWebRequest().WithCancellation(token);
+				string optimizedPersistentDataPath = Application.persistentDataPath;
 
-						if (request.result != UnityWebRequest.Result.Success) {
-							Error($"Error {request.result} fetching the resource \"{source}\"");
-							continue;
-						}
+				#if UNITY_STANDALONE_WIN
+					optimizedPersistentDataPath = Path.Combine(
+						Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+						Application.companyName, Application.productName);
+				#elif UNITY_STANDALONE_LINUX
+					optimizedPersistentDataPath = Path.Combine(
+						Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+						Application.companyName, Application.productName);
+				#elif UNITY_STANDALONE_OSX
+					optimizedPersistentDataPath = Path.Combine(
+						Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+						Application.companyName, Application.productName);
+				#endif
 
-						await writer.YieldAsync(request.downloadHandler.text);
-					}
-				});
+				return Path.GetFullPath(Path.Combine(optimizedPersistentDataPath, path, filename));
 			}
 
 		#endregion
 	}
 }
-
-
-#endif
 
 
 /*       ________________________________________________________________       */

@@ -1,38 +1,15 @@
-using System.IO;
-using System;
+using DragonResonance.Behaviours;
 using UnityEngine;
 
 
-namespace DragonResonance.Storage
+namespace DragonResonance.Localizer
 {
-	public partial class SavedataManager
+	public class LocalizerSettings : SingletonScriptableObject<LocalizerSettings>
 	{
-		#region Publics
-
-			public string GetOptimizedPersistentDataPath() => GetOptimizedPersistentDataPath(".");
-			public string GetOptimizedPersistentDataPath(string path) => GetOptimizedPersistentDataPath(".", path);
-			public string GetOptimizedPersistentDataPath(string path, string filename)
-			{
-				string optimizedPersistentDataPath = Application.persistentDataPath;
-
-				#if UNITY_STANDALONE_WIN
-					optimizedPersistentDataPath = Path.Combine(
-						Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-						Application.companyName, Application.productName);
-				#elif UNITY_STANDALONE_LINUX
-					optimizedPersistentDataPath = Path.Combine(
-						Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-						Application.companyName, Application.productName);
-				#elif UNITY_STANDALONE_OSX
-					optimizedPersistentDataPath = Path.Combine(
-						Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-						Application.companyName, Application.productName);
-				#endif
-
-				return Path.GetFullPath(Path.Combine(optimizedPersistentDataPath, path, filename));
-			}
-
-		#endregion
+		public SystemLanguage CurrentLanguage = SystemLanguage.Spanish;
+		public SystemLanguage AlternativeLanguage = SystemLanguage.German;
+		public SystemLanguage FallbackLanguage = SystemLanguage.English;
+		public string[] OnlineSources = { };
 	}
 }
 

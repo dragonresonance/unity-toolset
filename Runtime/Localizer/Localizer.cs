@@ -12,16 +12,15 @@ using UnityEngine.Events;
 using UnityEngine;
 
 
-namespace DragonResonance.Localization
+namespace DragonResonance.Localizer
 {
-	public partial class LocalizationManager : PersistentSingletonPossumBehaviour<LocalizationManager>
+	public partial class Localizer : PersistentSingletonPossumBehaviour<Localizer>
 	{
 		[SerializeField] private SystemLanguage _currentLanguage = SystemLanguage.English;
 		[SerializeField] private string[] _onlineSources = { };
 
 
 		private readonly UniTaskCompletionSource _resourceFetching = new();
-		private readonly HeaderedSheet<string> _dataSheetV2 = new();
 		private readonly DynamicSheet<string> _dataSheet = new();
 
 		public static event Action OnLanguageChange = null;
@@ -78,6 +77,13 @@ namespace DragonResonance.Localization
 		#region Privates
 
 			private IEnumerable<string> GetKeys(string rawText) => Regex.Matches(rawText, @"\{(\w+)\}").Select(match => match.Groups[1].Value);
+
+		#endregion
+
+
+		#region Properties
+
+			private LocalizerSettings Settings => LocalizerSettings.Instance;
 
 		#endregion
 	}

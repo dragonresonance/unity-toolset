@@ -1,46 +1,45 @@
-#if UNITY_EDITOR && SIMPLEJSON
-
-
-using System.Collections.Generic;
-using Tabernero.SimpleJSON;
-using UnityEditor;
+using DragonResonance.Behaviours;
+using UnityEngine.Events;
 using UnityEngine;
 
 
-namespace DragonResonance.Storage
+namespace DragonResonance.Localizer
 {
-	[CustomEditor(typeof(SavedataManager))]
-	public class SavedataManagerEditor : UnityEditor.Editor
+	public class LocalizableEndpoint : PossumBehaviour
 	{
-		public override void OnInspectorGUI()
-		{
-			base.OnInspectorGUI();
-			SavedataManager savedataManager = (SavedataManager)base.target;
+		[SerializeField] private bool _autoTranslateOnLanguageChange = true;
+		[SerializeField] private string _localizationTemplate = "This is a {TEST}";
 
-			EditorGUILayout.Separator();
-			EditorGUILayout.LabelField("Controls", EditorStyles.boldLabel);
-			if (GUILayout.Button("Open Save Directory"))
-				EditorUtility.RevealInFinder(savedataManager.OptimizedPersistentDataPath);
-			if (GUILayout.Button(nameof(SavedataManager.Load)))
-				savedataManager.Load();
-			if (GUILayout.Button(nameof(SavedataManager.Save)))
-				savedataManager.Save();
-			if (GUILayout.Button("Save and Reload"))
-				savedataManager.SaveReload();
 
-			EditorGUILayout.Separator();
-			EditorGUILayout.LabelField("Data", EditorStyles.boldLabel);
-			EditorGUILayout.TextField($"Current Save Directory", savedataManager.OptimizedPersistentDataPath);
-			foreach (KeyValuePair<string, JSONNode> dataKeyValuePair in savedataManager.Data) {
-				EditorGUILayout.LabelField(dataKeyValuePair.Key, EditorStyles.miniLabel);
-				EditorGUILayout.TextArea(dataKeyValuePair.Value.ToString(savedataManager.UseCompactData));
+		public UnityEvent<string> OnLocalize = null;
+
+
+		#region Events
+
+			private void OnEnable()
+			{
+				Localize();
+				if (_autoTranslateOnLanguageChange)
+					Localizer.OnLanguageChange += Localize;
 			}
-		}
+
+			private void OnDisable()
+			{
+				if (_autoTranslateOnLanguageChange)
+					Localizer.OnLanguageChange -= Localize;
+			}
+
+		#endregion
+
+
+		#region Publics
+
+			[ContextMenu(nameof(Localize))]
+			public void Localize() => Localizer.Instance.Localize(_localizationTemplate, OnLocalize).Forget();
+
+		#endregion
 	}
 }
-
-
-#endif
 
 
 /*       ________________________________________________________________       */

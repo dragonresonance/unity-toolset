@@ -7,9 +7,9 @@ using Tabernero.SimpleJSON;
 using UnityEngine;
 
 
-namespace DragonResonance.Storage
+namespace DragonResonance.Savedata
 {
-	public partial class SavedataManager
+	public partial class Savedata
 	{
 		private readonly Dictionary<Delegate, Action<JSONNode>> _wrappers = new();
 

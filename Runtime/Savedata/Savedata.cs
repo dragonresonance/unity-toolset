@@ -14,9 +14,9 @@ using UnityEngine;
 
 
 
-namespace DragonResonance.Storage
+namespace DragonResonance.Savedata
 {
-	public partial class SavedataManager : PersistentSingletonPossumBehaviour<SavedataManager>
+	public partial class Savedata : PersistentSingletonPossumBehaviour<Savedata>
 	{
 		[SerializeField] private bool _loadOnStart = true;
 		[SerializeField] private bool _useCompactData = false;
@@ -170,6 +170,8 @@ namespace DragonResonance.Storage
 
 		#region Properties
 
+
+			private SavedataSettings Settings => SavedataSettings.Instance;
 
 			public bool Ready => _ready;
 			public bool UseCompactData => _useCompactData;

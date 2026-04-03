@@ -1,8 +1,14 @@
-namespace DragonResonance.Storage
+using DragonResonance.Behaviours;
+
+
+namespace DragonResonance.Savedata
 {
-	public interface ISavableData
+	public class SavedataSettings : SingletonScriptableObject<SavedataSettings>
 	{
-		public string Key { get; }
+		public bool LoadOnStart = true;
+		public bool UseCompactData = false;
+		public string DefaultFilePath = "savedata.json";
+		public SFilePathOverride[] Overrides = { };
 	}
 }
 

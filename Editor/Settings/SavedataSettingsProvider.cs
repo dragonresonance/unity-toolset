@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 
 
-using DragonResonance.Settings;
+using DragonResonance.Savedata;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,20 +11,14 @@ namespace DragonResonance.Editor.Settings
 	public class SavedataSettingsProvider : SettingsProvider
 	{
 		private const string SettingsPath = "Project/Dragon Resonance/Savedata";
+		private const int LargePadding = 24;
+		private const int SmallPadding = 12;
 
 
 		private static SavedataSettings _settings;
 
 
 		#region Constructors
-
-			public SavedataSettingsProvider(string path, SettingsScope scope) : base(path, scope) { }
-
-		#endregion
-
-
-
-		#region Publics
 
 			[SettingsProvider]
 			public static SettingsProvider Create()
@@ -44,17 +38,33 @@ namespace DragonResonance.Editor.Settings
 				return new SavedataSettingsProvider(SettingsPath, SettingsScope.Project);
 			}
 
+			public SavedataSettingsProvider(string path, SettingsScope scope) : base(path, scope) { }
+
+		#endregion
+
+
+		#region Publics
+
 			public override void OnGUI(string searchContext)
 			{
-				EditorGUI.BeginChangeCheck();
+				GUIStyle paddedSection = new() { padding = new RectOffset(LargePadding, LargePadding, SmallPadding, SmallPadding) };
+				EditorGUILayout.BeginVertical(paddedSection);
 				{
-					_settings.Enable = EditorGUILayout.Toggle("Enable", _settings.Enable);
-					if (!_settings.Enable) return;
+					SerializedObject serializedScriptableObject = new(_settings);
+					serializedScriptableObject.Update();
 
-					_settings.RuntimeTestString = EditorGUILayout.TextField("Runtime Test String", _settings.RuntimeTestString);
+					SerializedProperty property = serializedScriptableObject.GetIterator();
+					if (property.NextVisible(true)) {
+						do {
+							if (property.name == "m_Script") continue;
+							EditorGUILayout.PropertyField(property, true);
+						}
+						while (property.NextVisible(false));
+					}
+
+					serializedScriptableObject.ApplyModifiedProperties();
 				}
-				if (EditorGUI.EndChangeCheck())
-					EditorUtility.SetDirty(_settings);
+				EditorGUILayout.EndVertical();
 			}
 
 		#endregion

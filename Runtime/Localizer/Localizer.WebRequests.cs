@@ -1,45 +1,41 @@
-using DragonResonance.Behaviours;
-using UnityEngine.Events;
-using UnityEngine;
+#if UNITASK
 
 
-namespace DragonResonance.Localization
+using Cysharp.Threading.Tasks.Linq;
+using Cysharp.Threading.Tasks;
+using UnityEngine.Networking;
+
+
+namespace DragonResonance.Localizer
 {
-	public class LocalizableEndpoint : PossumBehaviour
+	public partial class Localizer	// WebRequests
 	{
-		[SerializeField] private bool _autoTranslateOnLanguageChange = true;
-		[SerializeField] private string _localizationTemplate = "This is a {TEST}";
+		#region Privates
 
-
-		public UnityEvent<string> OnLocalize = null;
-
-
-		#region Events
-
-			private void OnEnable()
+			private IUniTaskAsyncEnumerable<string> FetchResources()
 			{
-				Localize();
-				if (_autoTranslateOnLanguageChange)
-					LocalizationManager.OnLanguageChange += Localize;
+				return UniTaskAsyncEnumerable.Create<string>(async (writer, token) =>
+				{
+					foreach (string source in _onlineSources) {
+						using UnityWebRequest request = UnityWebRequest.Get(source);
+						await request.SendWebRequest().WithCancellation(token);
+
+						if (request.result != UnityWebRequest.Result.Success) {
+							Error($"Error {request.result} fetching the resource \"{source}\"");
+							continue;
+						}
+
+						await writer.YieldAsync(request.downloadHandler.text);
+					}
+				});
 			}
-
-			private void OnDisable()
-			{
-				if (_autoTranslateOnLanguageChange)
-					LocalizationManager.OnLanguageChange -= Localize;
-			}
-
-		#endregion
-
-
-		#region Publics
-
-			[ContextMenu(nameof(Localize))]
-			public void Localize() => LocalizationManager.Instance.Localize(_localizationTemplate, OnLocalize).Forget();
 
 		#endregion
 	}
 }
+
+
+#endif
 
 
 /*       ________________________________________________________________       */
