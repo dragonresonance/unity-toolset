@@ -16,6 +16,7 @@ namespace DragonResonance.Editor.Settings
 
 
 		private static SavedataSettings _settings;
+		private static SerializedObject _serializedScriptableObject;
 
 
 		#region Constructors
@@ -24,7 +25,6 @@ namespace DragonResonance.Editor.Settings
 			public static SettingsProvider Create()
 			{
 				string[] guids = AssetDatabase.FindAssets($"t:{nameof(SavedataSettings)}");
-
 				if (guids.Length > 0) {
 					string path = AssetDatabase.GUIDToAssetPath(guids[0]);
 					_settings = AssetDatabase.LoadAssetAtPath<SavedataSettings>(path);
@@ -34,6 +34,8 @@ namespace DragonResonance.Editor.Settings
 					AssetDatabase.CreateAsset(_settings, $"Assets/SavedataSettings.asset");
 					AssetDatabase.SaveAssets();
 				}
+
+				_serializedScriptableObject = new SerializedObject(_settings);
 
 				return new SavedataSettingsProvider(SettingsPath, SettingsScope.Project);
 			}
@@ -50,10 +52,9 @@ namespace DragonResonance.Editor.Settings
 				GUIStyle paddedSection = new() { padding = new RectOffset(LargePadding, LargePadding, SmallPadding, SmallPadding) };
 				EditorGUILayout.BeginVertical(paddedSection);
 				{
-					SerializedObject serializedScriptableObject = new(_settings);
-					serializedScriptableObject.Update();
+					_serializedScriptableObject.Update();
 
-					SerializedProperty property = serializedScriptableObject.GetIterator();
+					SerializedProperty property = _serializedScriptableObject.GetIterator();
 					if (property.NextVisible(true)) {
 						do {
 							if (property.name == "m_Script") continue;
@@ -62,7 +63,7 @@ namespace DragonResonance.Editor.Settings
 						while (property.NextVisible(false));
 					}
 
-					serializedScriptableObject.ApplyModifiedProperties();
+					_serializedScriptableObject.ApplyModifiedProperties();
 				}
 				EditorGUILayout.EndVertical();
 			}

@@ -6,9 +6,9 @@ namespace DragonResonance.Localizer
 {
 	public class LocalizerSettings : SingletonScriptableObject<LocalizerSettings>
 	{
-		public SystemLanguage CurrentLanguage = SystemLanguage.Spanish;
-		public SystemLanguage AlternativeLanguage = SystemLanguage.German;
-		public SystemLanguage FallbackLanguage = SystemLanguage.English;
+		public SystemLanguage DefaultLanguage = SystemLanguage.English;
+		//public bool UseFallback = false;
+		//public SystemLanguage FallbackLanguage = SystemLanguage.Spanish;
 		public string[] OnlineSources = { };
 	}
 }
