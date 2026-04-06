@@ -1,10 +1,13 @@
 #if UNITY_EDITOR
 
 
+using DragonResonance.Extensions;
 using DragonResonance.Localizer;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityObject = UnityEngine.Object;
 
 
 namespace DragonResonance.Editor.Settings
@@ -34,6 +37,11 @@ namespace DragonResonance.Editor.Settings
 					_settings = ScriptableObject.CreateInstance<LocalizerSettings>();
 					AssetDatabase.CreateAsset(_settings, $"Assets/LocalizerSettings.asset");
 					AssetDatabase.SaveAssets();
+
+					// Add it to PreloadedAssets so they load ASAP on builds
+					List<UnityObject> preloadedAssets = PlayerSettings.GetPreloadedAssets().ToList();
+					preloadedAssets.AddOrIgnore(_settings);
+					PlayerSettings.SetPreloadedAssets(preloadedAssets.ToArray());
 				}
 
 				_serializedScriptableObject = new SerializedObject(_settings);

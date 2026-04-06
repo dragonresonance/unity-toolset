@@ -1,42 +1,16 @@
-#if UNITASK
-
-
-using Cysharp.Threading.Tasks.Linq;
-using Cysharp.Threading.Tasks;
-using DragonResonance.Logging;
-using UnityEngine.Networking;
+using System;
+using UnityEngine;
 
 
 namespace DragonResonance.Localizer
 {
-	public partial class Localizer	// WebRequests
+	[Serializable]
+	public struct SResourceSource
 	{
-		#region Privates
-
-			private static IUniTaskAsyncEnumerable<string> FetchResources()
-			{
-				return UniTaskAsyncEnumerable.Create<string>(async (writer, token) =>
-				{
-					foreach (string source in _settings.OnlineSources) {
-						using UnityWebRequest request = UnityWebRequest.Get(source);
-						await request.SendWebRequest().WithCancellation(token);
-
-						if (request.result != UnityWebRequest.Result.Success) {
-							HLogger.LogError($"Error {request.result} fetching the resource \"{source}\"");
-							continue;
-						}
-
-						await writer.YieldAsync(request.downloadHandler.text);
-					}
-				});
-			}
-
-		#endregion
+		public TextAsset FileAsset;
+		public string Url;
 	}
 }
-
-
-#endif
 
 
 /*       ________________________________________________________________       */

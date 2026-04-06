@@ -35,9 +35,10 @@ namespace DragonResonance.Localizer
 
 			private static async void OnStartup()
 			{
-				await foreach (string fileContent in FetchResources())
-					//_dataSheet.TryJoinTSV(fileContent);
-					_dataSheet.JoinTSV(fileContent);
+				#if ENABLE_UNITYWEBREQUEST && (UNITY_EDITOR || DEVELOPMENT_BUILD)
+					await RetrieveOnlineData();
+				#endif
+				await LoadLocalData();
 				_loading.TrySetResult();
 			}
 

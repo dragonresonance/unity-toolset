@@ -1,16 +1,13 @@
-using DragonResonance.Behaviours;
-using UnityEngine;
+using System;
 
 
 namespace DragonResonance.Localizer
 {
-	public class LocalizerSettings : SingletonScriptableObject<LocalizerSettings>
+	[Serializable]
+	public struct SStreamingSource
 	{
-		public SystemLanguage DefaultLanguage = SystemLanguage.English;
-		//public bool UseFallback = false;
-		//public SystemLanguage FallbackLanguage = SystemLanguage.Spanish;
-		public SResourceSource[] ResourceSources = { };
-		public SStreamingSource[] StreamingSources = { };
+		public string FilePath;
+		public string Url;
 	}
 }
 

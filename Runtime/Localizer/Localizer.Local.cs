@@ -1,18 +1,33 @@
-using DragonResonance.Behaviours;
+#if UNITASK
+
+
+using Cysharp.Threading.Tasks;
+using System.IO;
 using UnityEngine;
 
 
 namespace DragonResonance.Localizer
 {
-	public class LocalizerSettings : SingletonScriptableObject<LocalizerSettings>
+	public partial class Localizer	// Local
 	{
-		public SystemLanguage DefaultLanguage = SystemLanguage.English;
-		//public bool UseFallback = false;
-		//public SystemLanguage FallbackLanguage = SystemLanguage.Spanish;
-		public SResourceSource[] ResourceSources = { };
-		public SStreamingSource[] StreamingSources = { };
+		#region Publics
+
+			public static async UniTask LoadLocalData()
+			{
+				foreach (SResourceSource source in _settings.ResourceSources)
+					_dataSheet.JoinTSV(source.FileAsset.text);
+
+				foreach (SStreamingSource source in _settings.StreamingSources)
+					_dataSheet.JoinTSV(await File.ReadAllTextAsync(
+						Path.Join(Application.streamingAssetsPath, source.FilePath)));
+			}
+
+		#endregion
 	}
 }
+
+
+#endif
 
 
 /*       ________________________________________________________________       */
