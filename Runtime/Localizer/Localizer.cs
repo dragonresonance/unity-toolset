@@ -2,6 +2,7 @@
 
 
 using Cysharp.Threading.Tasks;
+using DragonResonance.Extensions;
 using DragonResonance.Logging;
 using PossumScream.Databases;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace DragonResonance.Localizer
 	{
 		private static LocalizerSettings _settings => LocalizerSettings.Instance;
 
-		private static SystemLanguage _currentLanguage = _settings.DefaultLanguage;
+		private static SystemLanguage _currentLanguage = SystemLanguage.Unknown;
 		private static readonly UniTaskCompletionSource _loading = new();
 		private static readonly HeaderedSheet<string> _dataSheet = new();
 
@@ -39,6 +40,7 @@ namespace DragonResonance.Localizer
 					await RetrieveOnlineData();
 				#endif
 				await LoadLocalData();
+				_currentLanguage = FirstPreferredLanguage(_currentLanguage);
 				_loading.TrySetResult();
 			}
 
@@ -58,7 +60,6 @@ namespace DragonResonance.Localizer
 			public static async UniTaskVoid Localize(string template, UnityEvent<string> handler)
 			{
 				await _loading.Task;
-
 				handler.Invoke(await Localize(template));
 			}
 
@@ -99,6 +100,13 @@ namespace DragonResonance.Localizer
 
 		#region Privates
 
+			private static SystemLanguage FirstPreferredLanguage(SystemLanguage fallback)
+			{
+				SystemLanguage[] preferredLanguages = _settings.PreferredLanguages.ToArray();
+				SystemLanguage[] availableLanguages = Localizer.AvailableLanguages.ToArray();
+				return preferredLanguages.FirstMatchOrFallback(availableLanguages, fallback);
+			}
+
 			private static IEnumerable<string> GetKeys(string rawText) =>
 				Regex.Matches(rawText, @"\{(\w+)\}").Select(match => match.Groups[1].Value);
 
@@ -111,7 +119,7 @@ namespace DragonResonance.Localizer
 			public static UniTaskCompletionSource Loading => _loading;
 			public static HeaderedSheet<string> DataSheet => _dataSheet;
 
-			public static bool IsDefaultLanguage => (_currentLanguage == _settings.DefaultLanguage);
+			public static bool IsDefaultLanguage => (_currentLanguage == _settings.PreferredLanguages.First());
 			public static IEnumerable<string> AvailableLanguageNames => Localizer.AvailableLanguages.Select(language => language.ToString());
 			public static IEnumerable<SystemLanguage> AvailableLanguages => _dataSheet.HeadingRow
 				.Select(cellString => (success: Enum.TryParse<SystemLanguage>(cellString, out var language), language))

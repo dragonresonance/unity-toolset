@@ -1,4 +1,6 @@
 using DragonResonance.Behaviours;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -6,11 +8,12 @@ namespace DragonResonance.Localizer
 {
 	public class LocalizerSettings : SingletonScriptableObject<LocalizerSettings>
 	{
-		public SystemLanguage DefaultLanguage = SystemLanguage.English;
-		//public bool UseFallback = false;
-		//public SystemLanguage FallbackLanguage = SystemLanguage.Spanish;
+		public SystemLanguage[] LanguageFallbacks = { SystemLanguage.English, SystemLanguage.Spanish, SystemLanguage.ChineseSimplified };
 		public SResourceSource[] ResourceSources = { };
 		public SStreamingSource[] StreamingSources = { };
+
+		public SystemLanguage SystemLanguage => Application.systemLanguage;
+		public IEnumerable<SystemLanguage> PreferredLanguages => new[] { this.SystemLanguage }.Concat(LanguageFallbacks);
 	}
 }
 
