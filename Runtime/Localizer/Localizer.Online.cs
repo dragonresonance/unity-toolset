@@ -56,6 +56,9 @@ namespace DragonResonance.Localizer
 				Func<TSource, string> GetUrl,
 				Func<TSource, T> GetSource)
 			{
+				if (sources == null)
+					return UniTaskAsyncEnumerable.Empty<(T, string)>();
+
 				return UniTaskAsyncEnumerable.Create<(T, string)>(async (writer, token) =>
 				{
 					foreach (TSource source in sources) {
