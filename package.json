@@ -1,12 +1,12 @@
 {
 	"name": "com.dragonresonance.toolset",
-	"version": "3.2.2",
+	"version": "3.2.3",
 	"displayName": "Dragon Resonance ToolSet",
 	"description": "",
 	"unity": "6000.0",
 	"license": "Apache-2.0",
 	"dependencies": {
-		"com.dragonresonance.devkit": "3.1.3",
+		"com.dragonresonance.devkit": "3.2.0",
 		"dev.tabernero.simplejson": "2026.2.3",
 		"com.cysharp.unitask": "2.5.10"
 	},

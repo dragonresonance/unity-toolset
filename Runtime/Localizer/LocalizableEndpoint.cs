@@ -1,4 +1,5 @@
 using DragonResonance.Behaviours;
+using System.Text.RegularExpressions;
 using UnityEngine.Events;
 using UnityEngine;
 
@@ -8,13 +9,22 @@ namespace DragonResonance.Localizer
 	public class LocalizableEndpoint : PossumBehaviour
 	{
 		[SerializeField] private bool _autoTranslateOnLanguageChange = true;
+		[SerializeField] private bool _autoWriteBraces = true;
 		[SerializeField] private string _localizationTemplate = "This is a {TEST}";
 
 
+		private static readonly Regex NoBracesSingleToken = new(@"^[^\s\{\}]+$");
 		public UnityEvent<string> OnLocalize = null;
 
 
 		#region Events
+
+			private void OnValidate()
+			{
+				if (_autoWriteBraces && !string.IsNullOrWhiteSpace(_localizationTemplate) && NoBracesSingleToken.IsMatch(_localizationTemplate))
+					_localizationTemplate = $"{{{_localizationTemplate}}}";
+			}
+
 
 			private void OnEnable()
 			{
