@@ -6,7 +6,7 @@ A complementary package of Unity tools that expands the main package with advanc
 
 ![Alt](https://repobeats.axiom.co/api/embed/bcbdfd3c2e06a07632b2bc1357eb6a098834690e.svg "Repobeats analytics image")
 
-> > I develop, maintain, and use this package for my own projects, so it is continuously tested in real-world development and updated frequently. Minor bugs may occur from time to time.
+> I develop, maintain, and use this package for my own projects, so it is continuously tested in real-world development and updated frequently. Minor bugs may occur from time to time.
 
 
 
