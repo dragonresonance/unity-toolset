@@ -49,8 +49,9 @@ namespace DragonResonance.Localizer
 
 		#region Publics
 
-			public static void ChangeLanguage(SystemLanguage language)
+			public static async UniTaskVoid ChangeLanguage(SystemLanguage language)
 			{
+				await _loading.Task;
 				Log.Emphasis($"Language changed to {language}");
 				_currentLanguage = language;
 				OnLanguageChange?.Invoke();
