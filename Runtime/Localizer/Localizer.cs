@@ -20,11 +20,10 @@ namespace DragonResonance.Localizer
 	[Preserve]
 	public partial class Localizer
 	{
-		private static LocalizerSettings _settings => LocalizerSettings.Instance;
-
+		private static LocalizerSettings _settings = null;
 		private static SystemLanguage _currentLanguage = SystemLanguage.Unknown;
-		private static readonly UniTaskCompletionSource _loading = new();
 		private static readonly HeaderedSheet<string> _dataSheet = new();
+		private static readonly UniTaskCompletionSource _starting = new();
 
 		public static event Action OnLanguageChange = null;
 
@@ -36,12 +35,13 @@ namespace DragonResonance.Localizer
 
 			private static async void OnStartup()
 			{
+				_settings = await LocalizerSettings.GetInstanceAsync();
 				#if ENABLE_UNITYWEBREQUEST && (UNITY_EDITOR || DEVELOPMENT_BUILD)
 					await RetrieveOnlineData();
 				#endif
 				await LoadLocalData();
 				_currentLanguage = FirstPreferredLanguage(_currentLanguage);
-				_loading.TrySetResult();
+				_starting.TrySetResult();
 			}
 
 		#endregion
@@ -51,7 +51,7 @@ namespace DragonResonance.Localizer
 
 			public static async UniTaskVoid ChangeLanguage(SystemLanguage language)
 			{
-				await _loading.Task;
+				await _starting.Task;
 				Log.Emphasis($"Language changed to {language}");
 				_currentLanguage = language;
 				OnLanguageChange?.Invoke();
@@ -60,13 +60,13 @@ namespace DragonResonance.Localizer
 
 			public static async UniTaskVoid Localize(string template, UnityEvent<string> handler)
 			{
-				await _loading.Task;
+				await _starting.Task;
 				handler.Invoke(await Localize(template));
 			}
 
 			public static async UniTask<string> Localize(string template)
 			{
-				await _loading.Task;
+				await _starting.Task;
 
 				string language = _currentLanguage.ToString();
 				foreach (string key in GetKeys(template)) {
@@ -117,8 +117,9 @@ namespace DragonResonance.Localizer
 		#region Properties
 
 			public static SystemLanguage CurrentLanguage => _currentLanguage;
-			public static UniTaskCompletionSource Loading => _loading;
 			public static HeaderedSheet<string> DataSheet => _dataSheet;
+
+			public static UniTaskCompletionSource Starting => _starting;
 
 			public static bool IsDefaultLanguage => (_currentLanguage == _settings.PreferredLanguages.First());
 			public static IEnumerable<string> AvailableLanguageNames => Localizer.AvailableLanguages.Select(language => language.ToString());

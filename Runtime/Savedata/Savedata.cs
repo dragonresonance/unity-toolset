@@ -1,6 +1,7 @@
 #if SIMPLEJSON
 
 
+using Cysharp.Threading.Tasks;
 using DragonResonance.Behaviours;
 using DragonResonance.Extensions;
 using System.Collections.Generic;
@@ -20,11 +21,11 @@ namespace DragonResonance.Savedata
 	[Preserve]
 	public partial class Savedata : PersistentSingletonPossumBehaviour<Savedata>
 	{
-		private static SavedataSettings _settings => SavedataSettings.Instance;
-
+		private static SavedataSettings _settings = null;
 		private static bool _ready = false;
 		private static readonly Dictionary<string, JSONNode> _data = new();
 		private static readonly Dictionary<string, Action<JSONNode>> _events = new();
+		private static readonly UniTaskCompletionSource _starting = new();
 
 
 
@@ -35,8 +36,11 @@ namespace DragonResonance.Savedata
 			[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 			private static void Initialize() => OnStartup();
 
-			private static void OnStartup()
+			private static async void OnStartup()
 			{
+				_settings = await SavedataSettings.GetInstanceAsync();
+				_starting.TrySetResult();
+
 				if (_settings.LoadOnStart)
 					Load();
 			}
@@ -177,6 +181,8 @@ namespace DragonResonance.Savedata
 			public static bool Ready => _ready;
 			public static Dictionary<string, JSONNode> Data => _data;
 			public static Dictionary<string, Action<JSONNode>> Events => _events;
+
+			public static UniTaskCompletionSource Starting => _starting;
 
 			public static IEnumerable<string> FilePaths => _settings.Overrides
 				.Select(savable => savable.FilePath)
