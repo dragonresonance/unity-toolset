@@ -14,24 +14,19 @@ using UnityEngine.Scripting;
 using UnityEngine;
 
 
-
-
 namespace DragonResonance.Savedata
 {
 	[Preserve]
 	public partial class Savedata : PersistentSingletonPossumBehaviour<Savedata>
 	{
 		private static SavedataSettings _settings = null;
-		private static bool _ready = false;
 		private static readonly Dictionary<string, JSONNode> _data = new();
 		private static readonly Dictionary<string, Action<JSONNode>> _events = new();
 		private static readonly UniTaskCompletionSource _starting = new();
-
-
+		private static readonly UniTaskCompletionSource _loading = new();
 
 
 		#region Events
-
 
 			[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 			private static void Initialize() => OnStartup();
@@ -42,38 +37,38 @@ namespace DragonResonance.Savedata
 				_starting.TrySetResult();
 
 				if (_settings.LoadOnStart)
-					Load();
+					await Load();
 			}
-
 
 		#endregion
 
 
-
-
 		#region Publics - Files
 
-
-			public static void Load()
+			public static async UniTask Load()
 			{
+				await _starting.Task;
+
 				_data.Clear();
 				foreach (string filePath in Savedata.FilePaths) {
 					string dataFilePath = GetOptimizedPersistentDataPath(filePath);
 					if (!File.Exists(dataFilePath)) return;
 
-					string content = File.ReadAllText(dataFilePath, Encoding.UTF8);
+					string content = await File.ReadAllTextAsync(dataFilePath, Encoding.UTF8);
 					JSONNode jsonNode = JSONNode.Parse(content);
 
 					foreach (KeyValuePair<string, JSONNode> jsonDataKeyValuePair in jsonNode)
 						Set(jsonDataKeyValuePair.Key, jsonDataKeyValuePair.Value);
 				}
 
-				_ready = true;
+				_loading.TrySetResult();
 			}
 
 
-			public static void Save()
+			public static async UniTask Save()
 			{
+				await _loading.Task;
+
 				HashSet<string> processedKeys = new();
 				JSONNode temporalJsonNode = null;
 				string persistentDataPath = GetOptimizedPersistentDataPath();
@@ -87,7 +82,7 @@ namespace DragonResonance.Savedata
 							temporalJsonNode.Add(key, _data[key]);
 						processedKeys.Add(key);
 					}
-					File.WriteAllText(
+					await File.WriteAllTextAsync(
 						Path.Combine(persistentDataPath, savableOverride.FilePath),
 						temporalJsonNode.ToString(_settings.UseCompactData));
 				}
@@ -97,31 +92,26 @@ namespace DragonResonance.Savedata
 				foreach (KeyValuePair<string, JSONNode> keyValuePair in _data.Where(dataEntryPair => !processedKeys.Contains(dataEntryPair.Key))) {
 					temporalJsonNode.Add(keyValuePair.Key, keyValuePair.Value);
 				}
-				File.WriteAllText(
+				await File.WriteAllTextAsync(
 					Path.Combine(persistentDataPath, _settings.DefaultFilePath),
 					temporalJsonNode.ToString(_settings.UseCompactData));
 			}
 
 
 			[ContextMenu(nameof(SaveReload))]
-			public static void SaveReload()
+			public static async UniTaskVoid SaveReload()
 			{
-				Save();
-				Load();
+				await Save();
+				await Load();
 			}
-
 
 		#endregion
 
 
-
-
 		#region Publics - Data
-
 
 			public static bool Get(string key, out JSONNode json)
 			{
-				if (!_ready) Load();
 				return _data.TryGetValue(key, out json);
 			}
 
@@ -131,14 +121,10 @@ namespace DragonResonance.Savedata
 				Publish(key, json);
 			}
 
-
 		#endregion
 
 
-
-
 		#region Publics - Events
-
 
 			public static void Subscribe(string key, Action<JSONNode> handler)
 			{
@@ -154,14 +140,10 @@ namespace DragonResonance.Savedata
 					_events[key] = current - handler;
 			}
 
-
 		#endregion
 
 
-
-
 		#region Privates
-
 
 			private static void Publish(string key, JSONNode eventData)
 			{
@@ -169,25 +151,20 @@ namespace DragonResonance.Savedata
 					current?.Invoke(eventData);
 			}
 
-
 		#endregion
-
-
 
 
 		#region Properties
 
-
-			public static bool Ready => _ready;
 			public static Dictionary<string, JSONNode> Data => _data;
 			public static Dictionary<string, Action<JSONNode>> Events => _events;
 
 			public static UniTaskCompletionSource Starting => _starting;
+			public static UniTaskCompletionSource Loading => _loading;
 
 			public static IEnumerable<string> FilePaths => _settings.Overrides
 				.Select(savable => savable.FilePath)
 				.Prepend(_settings.DefaultFilePath);
-
 
 		#endregion
 	}
@@ -195,8 +172,6 @@ namespace DragonResonance.Savedata
 
 
 #endif
-
-
 
 
 /*       ________________________________________________________________       */
