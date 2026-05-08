@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System;
 using Tabernero.SimpleJSON;
 using UnityEngine.Scripting;
@@ -24,6 +25,7 @@ namespace DragonResonance.Savedata
 		private static readonly Dictionary<string, Action<JSONNode>> _events = new();
 		private static readonly UniTaskCompletionSource _starting = new();
 		private static readonly UniTaskCompletionSource _loading = new();
+		private static readonly SemaphoreSlim _saveSemaphore = new(1, 1);
 
 
 		#region Events
@@ -67,34 +69,40 @@ namespace DragonResonance.Savedata
 
 			public static async UniTask Save()
 			{
-				await _loading.Task;
+				if (!await _saveSemaphore.WaitAsync(0)) return;
+				try {
+					await _loading.Task;
 
-				HashSet<string> processedKeys = new();
-				JSONNode temporalJsonNode = null;
-				string persistentDataPath = GetOptimizedPersistentDataPath();
-				if (!Directory.CreateDirectory(persistentDataPath).Exists) return;
+					HashSet<string> processedKeys = new();
+					JSONNode temporalJsonNode = null;
+					string persistentDataPath = GetOptimizedPersistentDataPath();
+					if (!Directory.CreateDirectory(persistentDataPath).Exists) return;
 
-				// Overrides
-				foreach (SFilePathOverride savableOverride in _settings.Overrides) {
+					// Overrides
+					foreach (SFilePathOverride savableOverride in _settings.Overrides) {
+						temporalJsonNode = JSONNode.New();
+						foreach (string key in savableOverride.Keys) {
+							if (_data.ContainsKey(key))
+								temporalJsonNode.Add(key, _data[key]);
+							processedKeys.Add(key);
+						}
+						await File.WriteAllTextAsync(
+							Path.Combine(persistentDataPath, savableOverride.FilePath),
+							temporalJsonNode.ToString(_settings.UseCompactData));
+					}
+
+					// Default
 					temporalJsonNode = JSONNode.New();
-					foreach (string key in savableOverride.Keys) {
-						if (_data.ContainsKey(key))
-							temporalJsonNode.Add(key, _data[key]);
-						processedKeys.Add(key);
+					foreach (KeyValuePair<string, JSONNode> keyValuePair in _data.Where(dataEntryPair => !processedKeys.Contains(dataEntryPair.Key))) {
+						temporalJsonNode.Add(keyValuePair.Key, keyValuePair.Value);
 					}
 					await File.WriteAllTextAsync(
-						Path.Combine(persistentDataPath, savableOverride.FilePath),
+						Path.Combine(persistentDataPath, _settings.DefaultFilePath),
 						temporalJsonNode.ToString(_settings.UseCompactData));
 				}
-
-				// Default
-				temporalJsonNode = JSONNode.New();
-				foreach (KeyValuePair<string, JSONNode> keyValuePair in _data.Where(dataEntryPair => !processedKeys.Contains(dataEntryPair.Key))) {
-					temporalJsonNode.Add(keyValuePair.Key, keyValuePair.Value);
+				finally {
+					_saveSemaphore.Release();
 				}
-				await File.WriteAllTextAsync(
-					Path.Combine(persistentDataPath, _settings.DefaultFilePath),
-					temporalJsonNode.ToString(_settings.UseCompactData));
 			}
 
 
