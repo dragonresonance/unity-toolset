@@ -35,6 +35,8 @@ namespace DragonResonance.Localizer
 
 			private static async void OnStartup()
 			{
+				Logging.Log.Info("Starting up...");
+
 				_settings = await LocalizerSettings.GetInstanceAsync();
 				#if ENABLE_UNITYWEBREQUEST && (UNITY_EDITOR || DEVELOPMENT_BUILD)
 					await RetrieveOnlineData();
@@ -42,6 +44,8 @@ namespace DragonResonance.Localizer
 				await LoadLocalData();
 				_currentLanguage = FirstPreferredLanguage(_currentLanguage);
 				_starting.TrySetResult();
+
+				Logging.Log.Info("Started!");
 			}
 
 		#endregion

@@ -35,8 +35,10 @@ namespace DragonResonance.Savedata
 
 			private static async void OnStartup()
 			{
+				Logging.Log.Info("Starting up...");
 				_settings = await SavedataSettings.GetInstanceAsync();
 				_starting.TrySetResult();
+				Logging.Log.Info("Started!");
 
 				if (_settings.LoadOnStart)
 					await Load();
@@ -49,12 +51,13 @@ namespace DragonResonance.Savedata
 
 			public static async UniTask Load()
 			{
+				Logging.Log.Info("Loading...");
 				await _starting.Task;
 
 				_data.Clear();
 				foreach (string filePath in Savedata.FilePaths) {
 					string dataFilePath = GetOptimizedPersistentDataPath(filePath);
-					if (!File.Exists(dataFilePath)) return;
+					if (!File.Exists(dataFilePath)) continue;
 
 					string content = await File.ReadAllTextAsync(dataFilePath, Encoding.UTF8);
 					JSONNode jsonNode = JSONNode.Parse(content);
@@ -64,11 +67,14 @@ namespace DragonResonance.Savedata
 				}
 
 				_loading.TrySetResult();
+				Logging.Log.Info("Loaded!");
 			}
 
 
 			public static async UniTask Save()
 			{
+				Logging.Log.Info("Saving...");
+
 				if (!await _saveSemaphore.WaitAsync(0)) return;
 				try {
 					await _loading.Task;
@@ -103,6 +109,8 @@ namespace DragonResonance.Savedata
 				finally {
 					_saveSemaphore.Release();
 				}
+
+				Logging.Log.Info("Saved!");
 			}
 
 
