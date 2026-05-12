@@ -1,7 +1,6 @@
 #if SIMPLEJSON
 
 
-using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System;
 using Tabernero.SimpleJSON;
@@ -10,7 +9,7 @@ using UnityEngine;
 
 namespace DragonResonance.Savedata
 {
-	public partial class Savedata
+	public partial class Savedata	// Wrappers
 	{
 		private static readonly Dictionary<Delegate, Action<JSONNode>> _wrappers = new();
 

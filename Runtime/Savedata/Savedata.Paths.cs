@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DragonResonance.Savedata
 {
-	public partial class Savedata
+	public partial class Savedata	// Paths
 	{
 		#region Publics
 

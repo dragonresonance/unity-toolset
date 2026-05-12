@@ -10,7 +10,7 @@ namespace DragonResonance.Localizer
 	{
 		[SerializeField] private bool _autoTranslateOnLanguageChange = true;
 		[SerializeField] private bool _autoWriteBraces = true;
-		[SerializeField] private string _localizationTemplate = "This is a {TEST}";
+		[SerializeField] protected string _localizationTemplate = "This is a {TEST}";
 
 
 		private static readonly Regex NoBracesSingleToken = new(@"^[^\s\{\}]+$");
@@ -45,7 +45,7 @@ namespace DragonResonance.Localizer
 		#region Publics
 
 			[ContextMenu(nameof(Localize))]
-			public void Localize() => Localizer.Localize(_localizationTemplate, OnLocalize).Forget();
+			public virtual void Localize() => Localizer.Localize(_localizationTemplate, OnLocalize).Forget();
 
 		#endregion
 	}

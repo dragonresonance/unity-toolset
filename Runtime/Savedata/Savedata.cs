@@ -73,10 +73,10 @@ namespace DragonResonance.Savedata
 
 			public static async UniTask Save()
 			{
-				Logging.Log.Info("Saving...");
-
-				if (!await _saveSemaphore.WaitAsync(0)) return;
+				//await _saveSemaphore.WaitAsync();
+				if (!await _saveSemaphore.WaitAsync(_settings.ThreadTimeoutMilliseconds)) return;
 				try {
+					Logging.Log.Info("Saving...");
 					await _loading.Task;
 
 					HashSet<string> processedKeys = new();

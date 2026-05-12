@@ -1,4 +1,5 @@
 using DragonResonance.Behaviours;
+using UnityEngine;
 
 
 namespace DragonResonance.Savedata
@@ -7,6 +8,7 @@ namespace DragonResonance.Savedata
 	{
 		public bool LoadOnStart = true;
 		public bool UseCompactData = false;
+		[Min(0)] public int ThreadTimeoutMilliseconds = 0;
 		public string DefaultFilePath = "savedata.json";
 		public SFilePathOverride[] Overrides = { };
 	}
