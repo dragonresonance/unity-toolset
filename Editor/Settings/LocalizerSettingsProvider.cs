@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 
 
+using DragonResonance.Databases;
 using DragonResonance.Extensions;
 using DragonResonance.Localizer;
 using System.Collections.Generic;
@@ -21,6 +22,9 @@ namespace DragonResonance.Editor.Settings
 
 		private static LocalizerSettings _settings;
 		private static SerializedObject _serializedScriptableObject;
+
+		private Vector2 _dataViewScroll = Vector2.zero;
+		private float _dataCellWidth = 240f;
 
 
 		#region Constructors
@@ -58,7 +62,11 @@ namespace DragonResonance.Editor.Settings
 
 			public override void OnGUI(string searchContext)
 			{
+				HeaderedSheet<string> sheet = Localizer.Localizer.DataSheet;
+
 				GUIStyle paddedSection = new() { padding = new RectOffset(LargePadding, LargePadding, SmallPadding, SmallPadding) };
+				GUIStyle dataCellStyle = new(UnityEngine.GUI.skin.textArea) { wordWrap = true };
+
 				EditorGUILayout.BeginVertical(paddedSection);
 				{
 					_serializedScriptableObject.Update();
@@ -77,12 +85,24 @@ namespace DragonResonance.Editor.Settings
 				{
 					GUILayout.Height(SmallPadding);
 					EditorGUILayout.LabelField("Data", EditorStyles.boldLabel);
-					EditorGUI.BeginDisabledGroup(true);
-					{
-						foreach (List<string> rows in Localizer.Localizer.DataSheet.Data)
-							EditorGUILayout.TextField(string.Join("\t", rows));
+					if ((sheet?.Data == null) || (sheet.Data.IsEmpty()))
+						EditorGUILayout.LabelField("No data, only available on runtime", EditorStyles.centeredGreyMiniLabel);
+					else {
+						_dataCellWidth = EditorGUILayout.Slider($"Cell size", _dataCellWidth, 4f, 400f);
+						_dataViewScroll = EditorGUILayout.BeginScrollView(_dataViewScroll, true, true);
+						{
+							foreach (List<string> row in sheet.Data) {
+								EditorGUILayout.BeginHorizontal();
+								{
+									foreach (string column in row) {
+										EditorGUILayout.TextArea(column, dataCellStyle, GUILayout.Width(_dataCellWidth), GUILayout.ExpandHeight(true));
+									}
+								}
+								EditorGUILayout.EndHorizontal();
+							}
+						}
+						EditorGUILayout.EndScrollView();
 					}
-					EditorGUI.EndDisabledGroup();
 				}
 				EditorGUILayout.EndVertical();
 			}
