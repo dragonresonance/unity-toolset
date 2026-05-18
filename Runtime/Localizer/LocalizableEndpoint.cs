@@ -8,6 +8,7 @@ namespace DragonResonance.Localizer
 {
 	public class LocalizableEndpoint : PossumBehaviour
 	{
+		[SerializeField] private bool _autoTranslateOnEnable = true;
 		[SerializeField] private bool _autoTranslateOnLanguageChange = true;
 		[SerializeField] private bool _autoWriteBraces = true;
 		[SerializeField] protected string _localizationTemplate = "This is a {TEST}";
@@ -28,7 +29,8 @@ namespace DragonResonance.Localizer
 
 			private void OnEnable()
 			{
-				Localize();
+				if (_autoTranslateOnEnable)
+					Localize();
 				if (_autoTranslateOnLanguageChange)
 					Localizer.OnLanguageChange += Localize;
 			}
