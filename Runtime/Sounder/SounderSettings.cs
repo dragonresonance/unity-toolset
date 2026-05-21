@@ -1,5 +1,6 @@
 using DragonResonance.Behaviours;
 using UnityEngine.Audio;
+using UnityEngine;
 
 
 namespace DragonResonance.Sounder
@@ -7,6 +8,9 @@ namespace DragonResonance.Sounder
 	public class SounderSettings : SingletonScriptableObject<SounderSettings>
 	{
 		public AudioMixer AudioMixer = null;
+		[Min(0)] public int StartingPoolSize = 4;
+		[Min(0)] public int StartingPoolAmount = 8;
+		[Min(0)] public int MaxPoolSize = 80;
 	}
 }
 

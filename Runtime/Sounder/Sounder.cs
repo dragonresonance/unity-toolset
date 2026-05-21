@@ -2,15 +2,7 @@
 
 
 using Cysharp.Threading.Tasks;
-using DragonResonance.Databases;
-using DragonResonance.Extensions;
-using DragonResonance.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Text;
-using System;
-using UnityEngine.Events;
+using UnityEngine.Audio;
 using UnityEngine.Scripting;
 using UnityEngine;
 
@@ -18,7 +10,7 @@ using UnityEngine;
 namespace DragonResonance.Sounder
 {
 	[Preserve]
-	public partial class Sounder
+	public class Sounder
 	{
 		private static SounderSettings _settings = null;
 		private static readonly UniTaskCompletionSource _starting = new();
@@ -44,10 +36,14 @@ namespace DragonResonance.Sounder
 
 		#region Publics
 
-			public static async UniTaskVoid Localize(string template)
+			public static void PlayOnce(AudioResource resource) => PlayOnceAsync(resource).Forget();
+			public static async UniTask PlayOnceAsync(AudioResource resource)
 			{
 				await _starting.Task;
-				//
+				AudioSource audioSource = SounderPool.Current.Get().GetComponent<AudioSource>();
+				audioSource.resource = resource;
+				audioSource.Play();
+				await SounderPool.Current.ReleaseWhenDoneAsync(audioSource);
 			}
 
 		#endregion
@@ -55,7 +51,7 @@ namespace DragonResonance.Sounder
 
 		#region Privates
 
-			private static void Test(SystemLanguage fallback)
+			private static void Test()
 			{
 				//
 			}

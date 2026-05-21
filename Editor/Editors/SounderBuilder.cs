@@ -6,6 +6,7 @@ using DragonResonance.Extensions;
 using DragonResonance.Sounder;
 using System.IO;
 using System.Linq;
+using System;
 using UnityEditor;
 using UnityEngine.Audio;
 using UnityEngine;
@@ -13,6 +14,7 @@ using UnityEngine;
 
 namespace DragonResonance.Editor.Editors
 {
+	[Obsolete]
 	public class SounderBuilder : PossumBehaviour
 	{
 		#region Publics
@@ -54,8 +56,9 @@ namespace DragonResonance.Editor.Editors
 				AudioSource audioSource = new GameObject().AddComponent<AudioSource>();
 				audioSource.transform.SetParent(this.transform);
 				audioSource.name = audioMixerGroup.name;
-				audioSource.outputAudioMixerGroup = audioMixerGroup;
 				audioSource.resource = GetAudioResource(audioMixerGroup.name);
+				audioSource.outputAudioMixerGroup = audioMixerGroup;
+				audioSource.playOnAwake = false;
 			}
 
 			private void DestroyUninitializedAudioSources()
