@@ -40,7 +40,7 @@ namespace DragonResonance.Sounder
 			public static async UniTask<AudioSource> PlayOnceAsync(AudioResource resource, AudioMixerGroup mixerGroup)
 			{
 				await _starting.Task;
-				AudioSource audioSource = SounderPool.Current.Get().GetComponent<AudioSource>();
+				AudioSource audioSource = SounderPool.Instance.Get();
 				audioSource.resource = resource;
 				audioSource.outputAudioMixerGroup = mixerGroup;
 				audioSource.Play();
@@ -49,7 +49,7 @@ namespace DragonResonance.Sounder
 				return audioSource;
 			}
 
-			public static void Stop(AudioSource source) => SounderPool.Current.Release(source);
+			public static void Stop(AudioSource audioSource) => audioSource.Stop();
 
 		#endregion
 

@@ -12,17 +12,16 @@ namespace DragonResonance.Sounder
 		private const string POOLED_AUDIOSOURCE_NAME = "PooledAudioSource";
 
 
-		private ObjectPool<GameObject> _pool = null;
+		private ObjectPool<AudioSource> _pool = null;
 
 
 		#region Events
 
-			protected new async void Awake()
+			protected override async void LateAwake()
 			{
-				base.Awake();
 				SounderSettings settings = await SounderSettings.GetInstanceAsync();
-				Log($"Generating {settings.StartingPoolSize} items...");
-				_pool = new ObjectPool<GameObject>(
+				Log($"Generating {settings.StartingPoolAmount} items...");
+				_pool = new ObjectPool<AudioSource>(
 					createFunc: CreateItem,
 					actionOnGet: OnItemGet,
 					actionOnRelease: OnItemRelease,
@@ -39,14 +38,14 @@ namespace DragonResonance.Sounder
 
 		#region Publics
 
-			public GameObject Get() => _pool.Get();
-			public void Release(AudioSource source) => _pool.Release(source.gameObject);
+			public AudioSource Get() => _pool.Get();
+			public void Release(AudioSource item) => _pool.Release(item);
 
-			public void ReleaseWhenDone(AudioSource source) => ReleaseWhenDoneAsync(source).Forget();
-			public async UniTask ReleaseWhenDoneAsync(AudioSource source)
+			public void ReleaseWhenDone(AudioSource item) => ReleaseWhenDoneAsync(item).Forget();
+			public async UniTask ReleaseWhenDoneAsync(AudioSource audioSourceItem)
 			{
-				await UniTask.WaitWhile(() => source.isPlaying, cancellationToken: this.GetCancellationTokenOnDestroy());
-				_pool.Release(source.gameObject);
+				await UniTask.WaitWhile(() => audioSourceItem.isPlaying, cancellationToken: this.GetCancellationTokenOnDestroy());
+				_pool.Release(audioSourceItem);
 			}
 
 		#endregion
@@ -56,14 +55,14 @@ namespace DragonResonance.Sounder
 
 			private void Populate(int amount)
 			{
-				Queue<GameObject> populatedItems = new(amount);
+				Queue<AudioSource> populatedItems = new(amount);
 				for (int itemIndex = 0; itemIndex < amount; itemIndex++)
 					populatedItems.Enqueue(_pool.Get());
-				while (populatedItems.TryDequeue(out GameObject item))
+				while (populatedItems.TryDequeue(out AudioSource item))
 					_pool.Release(item);
 			}
 
-			private GameObject CreateItem()
+			private AudioSource CreateItem()
 			{
 				GameObject gameObject = new(POOLED_AUDIOSOURCE_NAME);
 				gameObject.transform.SetParent(this.transform);
@@ -73,26 +72,24 @@ namespace DragonResonance.Sounder
 				audioSource.playOnAwake = false;
 
 				UpdatePooledAudioSourceName(audioSource);
-				return gameObject;
+				return audioSource;
 			}
 
-			private void OnItemGet(GameObject gameObject)
+			private void OnItemGet(AudioSource audioSource)
 			{
-				AudioSource audioSource = gameObject.GetComponent<AudioSource>();
 				audioSource.enabled = true;
 				UpdatePooledAudioSourceName(audioSource);
 			}
 
-			private void OnItemRelease(GameObject gameObject)
+			private void OnItemRelease(AudioSource audioSource)
 			{
-				AudioSource audioSource = gameObject.GetComponent<AudioSource>();
 				audioSource.enabled = false;
 				UpdatePooledAudioSourceName(audioSource);
 			}
 
-			private void OnItemDestroy(GameObject gameObject)
+			private void OnItemDestroy(AudioSource audioSource)
 			{
-				DestroyDynamically(gameObject);
+				DestroyDynamically(audioSource.gameObject);
 			}
 
 			private void UpdatePooledAudioSourceName(AudioSource audioSource)
