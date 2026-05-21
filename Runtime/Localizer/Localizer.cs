@@ -53,7 +53,7 @@ namespace DragonResonance.Localizer
 
 		#region Publics
 
-			public static async UniTaskVoid ChangeLanguage(SystemLanguage language)
+			public static async UniTask ChangeLanguage(SystemLanguage language)
 			{
 				await _starting.Task;
 				Log.Emphasis($"Language changed to {language}");
@@ -62,7 +62,7 @@ namespace DragonResonance.Localizer
 			}
 
 
-			public static async UniTaskVoid Localize(string template, UnityEvent<string> handler)
+			public static async UniTask Localize(string template, UnityEvent<string> handler)
 			{
 				await _starting.Task;
 				handler.Invoke(await Localize(template));

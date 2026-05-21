@@ -115,7 +115,7 @@ namespace DragonResonance.Savedata
 
 
 			[ContextMenu(nameof(SaveReload))]
-			public static async UniTaskVoid SaveReload()
+			public static async UniTask SaveReload()
 			{
 				await Save();
 				await Load();
