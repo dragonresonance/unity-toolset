@@ -40,6 +40,7 @@ namespace DragonResonance.Sounder
 		#region Publics
 
 			public GameObject Get() => _pool.Get();
+			public void Release(AudioSource source) => _pool.Release(source.gameObject);
 
 			public void ReleaseWhenDone(AudioSource source) => ReleaseWhenDoneAsync(source).Forget();
 			public async UniTask ReleaseWhenDoneAsync(AudioSource source)

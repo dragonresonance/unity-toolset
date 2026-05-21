@@ -37,15 +37,19 @@ namespace DragonResonance.Sounder
 		#region Publics
 
 			public static void PlayOnce(AudioResource resource, AudioMixerGroup mixerGroup) => PlayOnceAsync(resource, mixerGroup).Forget();
-			public static async UniTask PlayOnceAsync(AudioResource resource, AudioMixerGroup mixerGroup)
+			public static async UniTask<AudioSource> PlayOnceAsync(AudioResource resource, AudioMixerGroup mixerGroup)
 			{
 				await _starting.Task;
 				AudioSource audioSource = SounderPool.Current.Get().GetComponent<AudioSource>();
 				audioSource.resource = resource;
 				audioSource.outputAudioMixerGroup = mixerGroup;
 				audioSource.Play();
-				await SounderPool.Current.ReleaseWhenDoneAsync(audioSource);
+				// ReSharper disable once MethodHasAsyncOverload
+				SounderPool.Current.ReleaseWhenDone(audioSource);
+				return audioSource;
 			}
+
+			public static void Stop(AudioSource source) => SounderPool.Current.Release(source);
 
 		#endregion
 
