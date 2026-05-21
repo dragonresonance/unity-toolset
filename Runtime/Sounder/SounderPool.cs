@@ -45,7 +45,7 @@ namespace DragonResonance.Sounder
 			public async UniTask ReleaseWhenDoneAsync(AudioSource audioSourceItem)
 			{
 				await UniTask.WaitWhile(() => audioSourceItem.isPlaying, cancellationToken: this.GetCancellationTokenOnDestroy());
-				_pool.Release(audioSourceItem);
+				Release(audioSourceItem);
 			}
 
 		#endregion
