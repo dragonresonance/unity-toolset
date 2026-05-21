@@ -30,7 +30,7 @@ namespace DragonResonance.Savedata
 
 		#region Events
 
-			[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+			[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
 			private static void Initialize() => OnStartup();
 
 			private static async void OnStartup()
