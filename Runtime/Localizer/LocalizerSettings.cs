@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace DragonResonance.Localizer
 {
+	[CreateAssetMenu(menuName = "Dragon Resonance/Settings/Localizer", fileName = "New Localizer Settings")]
 	public class LocalizerSettings : SingletonScriptableObject<LocalizerSettings>
 	{
 		public SystemLanguage[] LanguageFallbacks = { SystemLanguage.English, SystemLanguage.Spanish, SystemLanguage.ChineseSimplified };
