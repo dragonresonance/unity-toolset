@@ -1,0 +1,49 @@
+name: Auto Merge & Tag
+
+on:
+  push:
+    paths:
+      - package.json
+
+jobs:
+  tag-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          sparse-checkout: |
+            ${{ vars.PROJECT_PATH }}/package.json
+
+      - name: Output package version
+        id: packageVersion
+        shell: bash
+        run: |
+          version=$(jq -r '.version' ${{ vars.PROJECT_PATH }}/package.json)
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check for existing tag
+        id: tagCheck
+        shell: bash
+        run: |
+          if git tag --list | grep -qx "v${{ steps.packageVersion.outputs.value }}"; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Merge and tag into default branch
+        if: steps.tagCheck.outputs.exists == 'false'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout ${{ github.event.repository.default_branch }}
+          git merge --no-ff "${{ github.ref_name }}" -m "Actions: Merge ${{ github.ref_name }} into ${{ github.event.repository.default_branch }}"
+          git tag "v${{ steps.packageVersion.outputs.value }}"
+          git push origin ${{ github.event.repository.default_branch }} --tags

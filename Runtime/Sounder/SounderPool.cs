@@ -11,35 +11,22 @@ namespace DragonResonance.Sounder
 	{
 		private const string POOLED_AUDIOSOURCE_NAME = "PooledAudioSource";
 
+		[SerializeField] private SounderSettings _settings = null;
 
 		private ObjectPool<AudioSource> _pool = null;
 
 
 		#region Events
 
-			protected override async void LateAwake()
-			{
-				SounderSettings settings = await SounderSettings.GetInstanceAsync();
-				Log($"Generating {settings.StartingPoolAmount} items...");
-				_pool = new ObjectPool<AudioSource>(
-					createFunc: CreateItem,
-					actionOnGet: OnItemGet,
-					actionOnRelease: OnItemRelease,
-					actionOnDestroy: OnItemDestroy,
-					defaultCapacity: settings.StartingPoolSize,
-					maxSize: settings.MaxPoolSize,
-					collectionCheck: false
-				);
-				Populate(settings.StartingPoolAmount);
-			}
+			protected override void LateAwake() => InitializePool();
 
 		#endregion
 
 
 		#region Publics
 
-			public AudioSource Get() => _pool.Get();
-			public void Release(AudioSource item) => _pool.Release(item);
+			public AudioSource Get() => this.Pool.Get();
+			public void Release(AudioSource item) => this.Pool.Release(item);
 
 			public void ReleaseWhenDone(AudioSource item) => ReleaseWhenDoneAsync(item).Forget();
 			public async UniTask ReleaseWhenDoneAsync(AudioSource audioSourceItem)
@@ -53,13 +40,30 @@ namespace DragonResonance.Sounder
 
 		#region Privates
 
+			private void InitializePool()
+			{
+				if (_pool != null) return;
+				Log($"Generating {_settings.StartingPoolAmount} items...");
+				_pool = new ObjectPool<AudioSource>(
+					createFunc: CreateItem,
+					actionOnGet: OnItemGet,
+					actionOnRelease: OnItemRelease,
+					actionOnDestroy: OnItemDestroy,
+					defaultCapacity: _settings.StartingPoolSize,
+					maxSize: _settings.MaxPoolSize,
+					collectionCheck: false
+				);
+				Populate(_settings.StartingPoolAmount);
+			}
+
+
 			private void Populate(int amount)
 			{
 				Queue<AudioSource> populatedItems = new(amount);
 				for (int itemIndex = 0; itemIndex < amount; itemIndex++)
-					populatedItems.Enqueue(_pool.Get());
+					populatedItems.Enqueue(this.Pool.Get());
 				while (populatedItems.TryDequeue(out AudioSource item))
-					_pool.Release(item);
+					this.Pool.Release(item);
 			}
 
 			private AudioSource CreateItem()
@@ -95,6 +99,19 @@ namespace DragonResonance.Sounder
 			private void UpdatePooledAudioSourceName(AudioSource audioSource)
 			{
 				audioSource.name = $"{POOLED_AUDIOSOURCE_NAME} ({(audioSource.enabled ? "Playing" : "Idle")})";
+			}
+
+		#endregion
+
+
+		#region Properties
+
+			public ObjectPool<AudioSource> Pool
+			{
+				get {
+					InitializePool();
+					return _pool;
+				}
 			}
 
 		#endregion
