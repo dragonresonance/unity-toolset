@@ -3,7 +3,7 @@ name: Auto Merge & Tag
 on:
   push:
     paths:
-      - package.json
+      - '/package.json'
 
 jobs:
   tag-version:
