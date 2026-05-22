@@ -1,6 +1,7 @@
 name: Auto Merge & Tag
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - '/package.json'
