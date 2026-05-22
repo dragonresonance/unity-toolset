@@ -17,13 +17,13 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
           sparse-checkout: |
-            ${{ vars.PROJECT_PATH }}/package.json
+            package.json
 
       - name: Output package version
         id: packageVersion
         shell: bash
         run: |
-          version=$(jq -r '.version' ${{ vars.PROJECT_PATH }}/package.json)
+          version=$(jq -r '.version' package.json)
           echo "value=$version" >> "$GITHUB_OUTPUT"
 
       - name: Check for existing tag
