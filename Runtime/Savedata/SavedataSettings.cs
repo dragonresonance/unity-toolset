@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace DragonResonance.Savedata
 {
+	[CreateAssetMenu(menuName = "Dragon Resonance/Settings/Savedata", fileName = "New Savedata Settings")]
 	public class SavedataSettings : SingletonScriptableObject<SavedataSettings>
 	{
 		public bool LoadOnStart = true;
