@@ -24,6 +24,11 @@
             "name": "com.cysharp.unitask",
             "expression": "",
             "define": "UNITASK"
+        },
+        {
+            "name": "com.rlabrecque.steamworks.net",
+            "expression": "",
+            "define": "STEAMWORKS_INTEGRATION"
         }
     ],
     "noEngineReferences": false
