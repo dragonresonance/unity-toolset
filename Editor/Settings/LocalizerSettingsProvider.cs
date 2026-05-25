@@ -2,6 +2,7 @@
 
 
 using DragonResonance.Databases;
+using DragonResonance.Editor.Building;
 using DragonResonance.Extensions;
 using DragonResonance.Localizer;
 using System.Collections.Generic;
@@ -33,21 +34,17 @@ namespace DragonResonance.Editor.Settings
 			public static SettingsProvider Create()
 			{
 				string[] guids = AssetDatabase.FindAssets($"t:{nameof(LocalizerSettings)}");
-				if (guids.Length > 0) {
-					string path = AssetDatabase.GUIDToAssetPath(guids[0]);
-					_settings = AssetDatabase.LoadAssetAtPath<LocalizerSettings>(path);
+				if (guids.Length.IsZero()) {
+					_settings = ScriptableObject.CreateInstance<LocalizerSettings>();
+					AssetDatabase.CreateAsset(_settings, $"Assets/{nameof(LocalizerSettings)}.asset");
+					AssetDatabase.SaveAssets();
 				}
 				else {
-					_settings = ScriptableObject.CreateInstance<LocalizerSettings>();
-					AssetDatabase.CreateAsset(_settings, $"Assets/LocalizerSettings.asset");
-					AssetDatabase.SaveAssets();
-
-					// Add it to PreloadedAssets so they load ASAP on builds
-					List<UnityObject> preloadedAssets = PlayerSettings.GetPreloadedAssets().ToList();
-					preloadedAssets.AddOrIgnore(_settings);
-					PlayerSettings.SetPreloadedAssets(preloadedAssets.ToArray());
+					string path = AssetDatabase.GUIDToAssetPath(guids.First());
+					_settings = AssetDatabase.LoadAssetAtPath<LocalizerSettings>(path);
 				}
 
+				PreloadedAssets.Add(_settings);
 				_serializedScriptableObject = new SerializedObject(_settings);
 
 				return new LocalizerSettingsProvider(SettingsPath, SettingsScope.Project);

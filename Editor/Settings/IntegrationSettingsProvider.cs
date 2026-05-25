@@ -3,7 +3,7 @@
 
 using DragonResonance.Editor.Building;
 using DragonResonance.Extensions;
-using DragonResonance.Sounder;
+using DragonResonance.Integration;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -12,14 +12,14 @@ using UnityObject = UnityEngine.Object;
 
 namespace DragonResonance.Editor.Settings
 {
-	public class SounderSettingsProvider : SettingsProvider
+	public class IntegrationSettingsProvider : SettingsProvider
 	{
-		private const string SettingsPath = "Project/Dragon Resonance/Sounder";
+		private const string SettingsPath = "Project/Dragon Resonance/Integration";
 		private const int LargePadding = 24;
 		private const int SmallPadding = 12;
 
 
-		private static SounderSettings _settings;
+		private static IntegrationSettings _settings;
 		private static SerializedObject _serializedScriptableObject;
 
 
@@ -28,24 +28,24 @@ namespace DragonResonance.Editor.Settings
 			[SettingsProvider]
 			public static SettingsProvider Create()
 			{
-				string[] guids = AssetDatabase.FindAssets($"t:{nameof(SounderSettings)}");
+				string[] guids = AssetDatabase.FindAssets($"t:{nameof(IntegrationSettings)}");
 				if (guids.Length.IsZero()) {
-					_settings = ScriptableObject.CreateInstance<SounderSettings>();
-					AssetDatabase.CreateAsset(_settings, $"Assets/{nameof(SounderSettings)}.asset");
+					_settings = ScriptableObject.CreateInstance<IntegrationSettings>();
+					AssetDatabase.CreateAsset(_settings, $"Assets/{nameof(IntegrationSettings)}.asset");
 					AssetDatabase.SaveAssets();
 				}
 				else {
 					string path = AssetDatabase.GUIDToAssetPath(guids.First());
-					_settings = AssetDatabase.LoadAssetAtPath<SounderSettings>(path);
+					_settings = AssetDatabase.LoadAssetAtPath<IntegrationSettings>(path);
 				}
 
 				PreloadedAssets.Add(_settings);
 				_serializedScriptableObject = new SerializedObject(_settings);
 
-				return new SounderSettingsProvider(SettingsPath, SettingsScope.Project);
+				return new IntegrationSettingsProvider(SettingsPath, SettingsScope.Project);
 			}
 
-			public SounderSettingsProvider(string path, SettingsScope scope) : base(path, scope) { }
+			public IntegrationSettingsProvider(string path, SettingsScope scope) : base(path, scope) { }
 
 		#endregion
 
