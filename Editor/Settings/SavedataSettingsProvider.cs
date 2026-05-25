@@ -1,9 +1,13 @@
 #if UNITY_EDITOR
 
 
+using DragonResonance.Editor.Building;
+using DragonResonance.Extensions;
 using DragonResonance.Savedata;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityObject = UnityEngine.Object;
 
 
 namespace DragonResonance.Editor.Settings
@@ -25,16 +29,17 @@ namespace DragonResonance.Editor.Settings
 			public static SettingsProvider Create()
 			{
 				string[] guids = AssetDatabase.FindAssets($"t:{nameof(SavedataSettings)}");
-				if (guids.Length > 0) {
-					string path = AssetDatabase.GUIDToAssetPath(guids[0]);
-					_settings = AssetDatabase.LoadAssetAtPath<SavedataSettings>(path);
-				}
-				else {
+				if (guids.Length.IsZero()) {
 					_settings = ScriptableObject.CreateInstance<SavedataSettings>();
-					AssetDatabase.CreateAsset(_settings, $"Assets/SavedataSettings.asset");
+					AssetDatabase.CreateAsset(_settings, $"Assets/{nameof(SavedataSettings)}.asset");
 					AssetDatabase.SaveAssets();
 				}
+				else {
+					string path = AssetDatabase.GUIDToAssetPath(guids.First());
+					_settings = AssetDatabase.LoadAssetAtPath<SavedataSettings>(path);
+				}
 
+				PreloadedAssets.Add(_settings);
 				_serializedScriptableObject = new SerializedObject(_settings);
 
 				return new SavedataSettingsProvider(SettingsPath, SettingsScope.Project);
