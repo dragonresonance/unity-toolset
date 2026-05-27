@@ -2,7 +2,7 @@
 
 
 using Cysharp.Threading.Tasks;
-using UnityEngine.Audio;
+using DragonResonance.Extensions;
 using UnityEngine.Scripting;
 using UnityEngine;
 
@@ -36,39 +36,52 @@ namespace DragonResonance.Sounder
 
 		#region Publics
 
-			public static void PlayOnce(SAudioSourceConfig audioSourceConfig) => PlayOnceAsync(audioSourceConfig).Forget();
-			public static async UniTask PlayOnceAsync(SAudioSourceConfig audioSourceConfig)
+			public static void Play(SAudioSourceConfig audioSourceConfig) =>
+				PlayAndAwait(audioSourceConfig).Forget();
+
+			public static void Play(SAudioSourceConfig audioSourceConfig, AudioSource audioSource) =>
+				SetupPooledAudioSource(audioSourceConfig, audioSource);
+
+
+			public static async UniTask PlayAndAwait(SAudioSourceConfig audioSourceConfig)
 			{
 				await _starting.Task;
-				AudioSource audioSource = SounderPool.Instance.Get();
-				audioSource.resource = audioSourceConfig.AudioResource;
-				audioSource.outputAudioMixerGroup = audioSourceConfig.AudioMixerGroup;
-				audioSource.Play();
+				AudioSource audioSource = SetupPooledAudioSource(audioSourceConfig);
 				await SounderPool.Current.ReleaseWhenDoneAsync(audioSource);
 			}
 
-			public static async UniTask<AudioSource> Play(SAudioSourceConfig audioSourceConfig)
+			public static async UniTask PlayAndAwait(SAudioSourceConfig audioSourceConfig, AudioSource audioSource)
 			{
-				await _starting.Task;
-				AudioSource audioSource = SounderPool.Instance.Get();
-				audioSource.resource = audioSourceConfig.AudioResource;
-				audioSource.outputAudioMixerGroup = audioSourceConfig.AudioMixerGroup;
-				audioSource.Play();
-				// ReSharper disable once MethodHasAsyncOverload
-				SounderPool.Current.ReleaseWhenDone(audioSource);
-				return audioSource;
+				SetupPooledAudioSource(audioSourceConfig, audioSource);
+				await UniTask.WaitUntil(audioSource.IsStopped);
 			}
 
+
+			public static async UniTask<AudioSource> PlayAndGet(SAudioSourceConfig audioSourceConfig)
+			{	// ReSharper disable MethodHasAsyncOverload
+				await _starting.Task;
+				AudioSource audioSource = SetupPooledAudioSource(audioSourceConfig);
+				SounderPool.Current.ReleaseWhenDone(audioSource);
+				return audioSource;
+			}	// ReSharper restore MethodHasAsyncOverload
+
+
 			public static void Stop(AudioSource audioSource) => audioSource.Stop();
+			public static void Release(AudioSource audioSource) => SounderPool.Current.Release(audioSource);
 
 		#endregion
 
 
 		#region Privates
 
-			private static void Test()
+			private static AudioSource SetupPooledAudioSource(SAudioSourceConfig audioSourceConfig) =>
+				SetupPooledAudioSource(audioSourceConfig, SounderPool.Instance.Get());
+			private static AudioSource SetupPooledAudioSource(SAudioSourceConfig audioSourceConfig, AudioSource audioSource)
 			{
-				//
+				audioSource.resource = audioSourceConfig.AudioResource;
+				audioSource.outputAudioMixerGroup = audioSourceConfig.AudioMixerGroup;
+				audioSource.Play();
+				return audioSource;
 			}
 
 		#endregion

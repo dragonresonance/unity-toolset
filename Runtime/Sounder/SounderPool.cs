@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DragonResonance.Behaviours;
+using DragonResonance.Extensions;
 using System.Collections.Generic;
 using UnityEngine.Pool;
 using UnityEngine;
@@ -31,7 +32,7 @@ namespace DragonResonance.Sounder
 			public void ReleaseWhenDone(AudioSource item) => ReleaseWhenDoneAsync(item).Forget();
 			public async UniTask ReleaseWhenDoneAsync(AudioSource audioSourceItem)
 			{
-				await UniTask.WaitWhile(() => audioSourceItem.isPlaying, cancellationToken: this.GetCancellationTokenOnDestroy());
+				await UniTask.WaitUntil(audioSourceItem.IsStopped);
 				Release(audioSourceItem);
 			}
 
