@@ -32,7 +32,10 @@ namespace DragonResonance.Sounder
 			public void ReleaseWhenDone(AudioSource item) => ReleaseWhenDoneAsync(item).Forget();
 			public async UniTask ReleaseWhenDoneAsync(AudioSource audioSourceItem)
 			{
-				await UniTask.WaitUntil(audioSourceItem.IsStopped);
+				if (audioSourceItem.resource is AudioClip)
+					await UniTask.WaitUntil(audioSourceItem.HasAudioClipStopped);
+				else
+					await UniTask.WaitUntil(audioSourceItem.HasAudioResourceStopped);
 				Release(audioSourceItem);
 			}
 
