@@ -53,15 +53,19 @@ namespace DragonResonance.Sounder
 			public static async UniTask PlayAndAwait(SAudioSourceConfig audioSourceConfig, AudioSource audioSource)
 			{
 				SetupPooledAudioSource(audioSourceConfig, audioSource);
-				await UniTask.WaitUntil(audioSource.IsStopped);
+				if (audioSourceConfig.AudioResource is AudioClip)
+					await UniTask.WaitUntil(audioSource.HasAudioClipStopped);
+				else
+					await UniTask.WaitUntil(audioSource.HasAudioResourceStopped);
 			}
 
 
-			public static async UniTask<AudioSource> PlayAndGet(SAudioSourceConfig audioSourceConfig)
+			public static async UniTask<AudioSource> PlayAndGet(SAudioSourceConfig audioSourceConfig, bool autoReleaseWhenDone = true)
 			{	// ReSharper disable MethodHasAsyncOverload
 				await _starting.Task;
 				AudioSource audioSource = SetupPooledAudioSource(audioSourceConfig);
-				SounderPool.Current.ReleaseWhenDone(audioSource);
+				if (autoReleaseWhenDone)
+					SounderPool.Current.ReleaseWhenDone(audioSource);
 				return audioSource;
 			}	// ReSharper restore MethodHasAsyncOverload
 
