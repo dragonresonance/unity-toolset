@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DragonResonance.Behaviours;
 using DragonResonance.Extensions;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine.Pool;
 using UnityEngine;
 
@@ -32,10 +33,13 @@ namespace DragonResonance.Sounder
 			public void ReleaseWhenDone(AudioSource item) => ReleaseWhenDoneAsync(item).Forget();
 			public async UniTask ReleaseWhenDoneAsync(AudioSource audioSourceItem)
 			{
+				CancellationToken cancellationToken = audioSourceItem.GetCancellationTokenOnDestroy();
+
 				if (audioSourceItem.resource is AudioClip)
-					await UniTask.WaitUntil(audioSourceItem.HasAudioClipStopped);
+					await UniTask.WaitUntil(audioSourceItem.HasAudioClipStopped, cancellationToken:cancellationToken);
 				else
-					await UniTask.WaitUntil(audioSourceItem.HasAudioResourceStopped);
+					await UniTask.WaitUntil(audioSourceItem.HasAudioResourceStopped, cancellationToken:cancellationToken);
+
 				Release(audioSourceItem);
 			}
 
