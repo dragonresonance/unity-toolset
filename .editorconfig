@@ -1,0 +1,16 @@
+# Top-Most EditorConfig file
+root = true
+
+# Custom style for every code file
+[*.cs]
+charset = utf-8
+end_of_line = lf
+indent_style = tab
+insert_final_newline = false
+tab_width = 4
+
+
+#                                                                                #
+#        Dragon Resonance                           Copyright © 2022-2026        #
+#        2026.06.23.0                                 All rights reserved        #
+#                                                                                #

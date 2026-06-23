@@ -15,9 +15,11 @@
 # Resource
 *.anim merge=unityyamlmerge eol=lf
 *.asset merge=unityyamlmerge eol=lf
+*.colors merge=unityyamlmerge eol=lf
 *.controller merge=unityyamlmerge eol=lf
 *.mat merge=unityyamlmerge eol=lf
 *.meta merge=unityyamlmerge eol=lf
+*.mixer merge=unityyamlmerge eol=lf
 *.physicMaterial merge=unityyamlmerge eol=lf
 *.physicsMaterial2D merge=unityyamlmerge eol=lf
 *.prefab merge=unityyamlmerge eol=lf
@@ -124,6 +126,6 @@
 
 
 #                                                                                #
-#        Dragon Resonance                           Copyright © 2022-2025        #
-#        2025.03.31.0                                 All rights reserved        #
+#        Dragon Resonance                           Copyright © 2022-2026        #
+#        2026.04.27.0                                 All rights reserved        #
 #                                                                                #
