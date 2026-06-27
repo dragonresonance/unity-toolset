@@ -1,131 +1,153 @@
-## Custom ##
-
-#/Assets/_Development_/Crest/** filter=lfs diff=lfs merge=lfs -text
-
-
+[attr]lfs                       filter=lfs diff=lfs merge=lfs -text
+[attr]unity-json                eol=lf linguist-language=json
+[attr]unity-yaml                merge=unityyamlmerge eol=lf linguist-language=yaml
 
 
-## Unity ##
+*                               text=auto
 
-# Script
-*.cginc eol=lf text
-*.cs diff=csharp eol=lf text
-*.shader eol=lf text
+*.3dm                           lfs
+*.3ds                           lfs
+*.7z                            lfs
+*.FBX                           lfs
+*.a                             lfs
+*.ai                            lfs
+*.aif                           lfs
+*.aiff                          lfs
+*.anim                          unity-yaml
+*.apk                           lfs
+*.asf                           lfs
+*.asmdef                        unity-json
+*.asmref                        unity-json
+*.asset                         unity-yaml
+*.avi                           lfs
+*.bash                          eol=lf text
+*.bat                           eol=crlf text
+*.bin                           lfs
+*.blend                         lfs
+*.blend1                        lfs
+*.bmp                           lfs
+*.brush                         unity-yaml
+*.bz2                           lfs
+*.c4d                           lfs
+*.cginc                         eol=lf text
+*.cmd                           eol=crlf text
+*.collada                       lfs
+*.colors                        unity-yaml
+*.compute                       text linguist-language=hlsl
+*.controller                    unity-yaml
+*.cs                            eol=lf text diff=csharp
+*.cubemap                       lfs
+*.dae                           lfs
+*.dll                           lfs
+*.dxf                           lfs
+*.eot                           lfs
+*.exe                           lfs
+*.exr                           lfs
+*.fbx                           lfs
+*.flare                         unity-yaml
+*.flv                           lfs
+*.fontsettings                  unity-yaml
+*.gif                           lfs
+*.giparams                      unity-yaml
+*.glb                           lfs
+*.glsl                          eol=lf text
+*.gltf                          lfs
+*.gso                           lfs
+*.guiskin                       unity-yaml
+*.gz                            lfs
+*.hdr                           lfs
+*.hlsl                          text linguist-language=hlsl
+*.iff                           lfs
+*.index                         unity-json
+*.inputactions                  unity-json
+*.it                            lfs
+*.jas                           lfs
+*.jpeg                          lfs
+*.jpg                           lfs
+*.lighting                      unity-yaml
+*.lws                           lfs
+*.lxo                           lfs
+*.lz4                           lfs
+*.ma                            lfs
+*.mask                          unity-yaml
+*.mat                           unity-yaml
+*.max                           lfs
+*.mb                            lfs
+*.meta                          unity-yaml
+*.mixer                         unity-yaml
+*.mod                           lfs
+*.mov                           lfs
+*.mp3                           lfs
+*.mp4                           lfs
+*.mpeg                          lfs
+*.mpg                           lfs
+*.obj                           lfs
+*.ogg                           lfs
+*.ogv                           lfs
+*.otf                           lfs
+*.overrideController            unity-yaml
+*.pdb                           lfs
+*.pdf                           lfs
+*.physicMaterial                unity-yaml
+*.physicsMaterial2D             unity-yaml
+*.pict                          lfs
+*.playable                      unity-yaml
+*.ply                           lfs
+*.png                           lfs
+*.prefab                        unity-yaml
+*.preset                        unity-yaml
+*.psd                           lfs
+*.pso                           lfs
+*.rar                           lfs
+*.raytrace                      text linguist-language=hlsl
+*.reason                        lfs
+*.renderTexture                 unity-yaml
+*.rns                           lfs
+*.s3m                           lfs
+*.scenetemplate                 unity-yaml
+*.sh                            eol=lf text
+*.shader                        eol=lf text
+*.shadergraph                   unity-json
+*.shadersubgraph                unity-json
+*.shadervariants                unity-yaml
+*.signal                        unity-yaml
+*.skel.bytes                    lfs
+*.skp                           lfs
+*.so                            lfs
+*.spriteatlas                   unity-yaml
+*.spriteatlasv2                 unity-yaml
+*.stl                           lfs
+*.tar                           lfs
+*.terrainlayer                  unity-yaml
+*.tga                           lfs
+*.tif                           lfs
+*.tiff                          lfs
+*.tpsheet                       unity-yaml
+*.tss                           text diff=css linguist-language=css
+*.ttf                           lfs
+*.unity                         unity-yaml
+*.unitypackage                  lfs
+*.uss                           text diff=css linguist-language=css
+*.uxml                          text linguist-language=xml linguist-detectable
+*.wav                           lfs
+*.webp                          lfs
+*.wmv                           lfs
+*.woff                          lfs
+*.woff2                         lfs
+*.xm                            lfs
+*.zip                           lfs
+*.ztl                           lfs
 
-# Resource
-*.anim merge=unityyamlmerge eol=lf
-*.asset merge=unityyamlmerge eol=lf
-*.colors merge=unityyamlmerge eol=lf
-*.controller merge=unityyamlmerge eol=lf
-*.mat merge=unityyamlmerge eol=lf
-*.meta merge=unityyamlmerge eol=lf
-*.mixer merge=unityyamlmerge eol=lf
-*.physicMaterial merge=unityyamlmerge eol=lf
-*.physicsMaterial2D merge=unityyamlmerge eol=lf
-*.prefab merge=unityyamlmerge eol=lf
-*.unity merge=unityyamlmerge eol=lf
+*[Ll]ighting[Dd]ata*.asset      lfs
+*[Nn]av[Mm]esh*.asset           lfs
+*[Oo]cclusion[Cc]ulling*.asset  lfs
+*[Tt]errain*.asset              lfs
 
-# Misc
-#*.unity filter=lfs diff=lfs merge=lfs -text
-*.unitypackage filter=lfs diff=lfs merge=lfs -text
-
-# Exception
-*[Ll]ighting[Dd]ata*.asset filter=lfs diff=lfs merge=lfs -text
-*[Nn]av[Mm]esh*.asset filter=lfs diff=lfs merge=lfs -text
-*[Tt]errain*.asset filter=lfs diff=lfs merge=lfs -text
-
-
-## System ##
-
-# Windows
-*.bat eol=crlf text
-*.cmd eol=crlf text
-
-# Linux
-*.bash eol=lf text
-*.sh eol=lf text
-
-
-## git-lfs ##
-
-# Image
-*.ai filter=lfs diff=lfs merge=lfs -text
-*.exr filter=lfs diff=lfs merge=lfs -text
-*.gif filter=lfs diff=lfs merge=lfs -text
-*.jpeg filter=lfs diff=lfs merge=lfs -text
-*.jpg filter=lfs diff=lfs merge=lfs -text
-*.png filter=lfs diff=lfs merge=lfs -text
-*.psd filter=lfs diff=lfs merge=lfs -text
-*.tga filter=lfs diff=lfs merge=lfs -text
-*.webp filter=lfs diff=lfs merge=lfs -text
-
-# Audio
-*.aif filter=lfs diff=lfs merge=lfs -text
-*.aiff filter=lfs diff=lfs merge=lfs -text
-*.it filter=lfs diff=lfs merge=lfs -text
-*.mod filter=lfs diff=lfs merge=lfs -text
-*.mp3 filter=lfs diff=lfs merge=lfs -text
-*.ogg filter=lfs diff=lfs merge=lfs -text
-*.s3m filter=lfs diff=lfs merge=lfs -text
-*.wav filter=lfs diff=lfs merge=lfs -text
-*.xm filter=lfs diff=lfs merge=lfs -text
-
-# Video
-*.mov filter=lfs diff=lfs merge=lfs -text
-*.mp4 filter=lfs diff=lfs merge=lfs -text
-
-# 3D-Object
-*.3dm filter=lfs diff=lfs merge=lfs -text
-*.3ds filter=lfs diff=lfs merge=lfs -text
-*.blend filter=lfs diff=lfs merge=lfs -text
-*.blend1 filter=lfs diff=lfs merge=lfs -text
-*.c4d filter=lfs diff=lfs merge=lfs -text
-*.collada filter=lfs diff=lfs merge=lfs -text
-*.dae filter=lfs diff=lfs merge=lfs -text
-*.dxf filter=lfs diff=lfs merge=lfs -text
-*.fbx filter=lfs diff=lfs merge=lfs -text
-*.glb filter=lfs diff=lfs merge=lfs -text
-*.jas filter=lfs diff=lfs merge=lfs -text
-*.lws filter=lfs diff=lfs merge=lfs -text
-*.lxo filter=lfs diff=lfs merge=lfs -text
-*.ma filter=lfs diff=lfs merge=lfs -text
-*.max filter=lfs diff=lfs merge=lfs -text
-*.mb filter=lfs diff=lfs merge=lfs -text
-*.obj filter=lfs diff=lfs merge=lfs -text
-*.ply filter=lfs diff=lfs merge=lfs -text
-*.skp filter=lfs diff=lfs merge=lfs -text
-*.stl filter=lfs diff=lfs merge=lfs -text
-*.ztl filter=lfs diff=lfs merge=lfs -text
-
-# Font
-*.eot filter=lfs diff=lfs merge=lfs -text
-*.otf filter=lfs diff=lfs merge=lfs -text
-*.ttf filter=lfs diff=lfs merge=lfs -text
-*.woff filter=lfs diff=lfs merge=lfs -text
-*.woff2 filter=lfs diff=lfs merge=lfs -text
-
-# Misc
-*.7z filter=lfs diff=lfs merge=lfs -text
-*.a filter=lfs diff=lfs merge=lfs -text
-*.aif filter=lfs diff=lfs merge=lfs -text
-*.bin filter=lfs diff=lfs merge=lfs -text
-*.dll filter=lfs diff=lfs merge=lfs -text
-*.gso filter=lfs diff=lfs merge=lfs -text
-*.gz filter=lfs diff=lfs merge=lfs -text
-*.lxo filter=lfs diff=lfs merge=lfs -text
-*.lz4 filter=lfs diff=lfs merge=lfs -text
-*.pdf filter=lfs diff=lfs merge=lfs -text
-*.pso filter=lfs diff=lfs merge=lfs -text
-*.rar filter=lfs diff=lfs merge=lfs -text
-*.reason filter=lfs diff=lfs merge=lfs -text
-*.rns filter=lfs diff=lfs merge=lfs -text
-*.tar filter=lfs diff=lfs merge=lfs -text
-*.zip filter=lfs diff=lfs merge=lfs -text
-
-
+Assets/Plugins/**               linguist-generated
+Packages/packages-lock.json     linguist-generated
 
 
 #                                                                                #
 #        Dragon Resonance                           Copyright © 2022-2026        #
-#        2026.04.27.0                                 All rights reserved        #
+#        2026.06.27.0                                 All rights reserved        #
 #                                                                                #
