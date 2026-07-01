@@ -22,6 +22,8 @@ public class BuildLocalizableEndpoint : LocalizableEndpoint
 		{
 			if (_enableEditorTemplate)
 				Localizer.Localize(_localizationEditorTemplate, OnLocalize).Forget();
+			else
+				base.Localize();
 		}
 
 	#elif DEVELOPMENT_BUILD
@@ -30,6 +32,8 @@ public class BuildLocalizableEndpoint : LocalizableEndpoint
 		{
 			if (_enableDevelopmentTemplate)
 				Localizer.Localize(_localizationDevelopmentTemplate, OnLocalize).Forget();
+			else
+				base.Localize();
 		}
 
 	#elif DEMO_BUILD
@@ -38,6 +42,8 @@ public class BuildLocalizableEndpoint : LocalizableEndpoint
 		{
 			if (_enableDemoTemplate)
 				Localizer.Localize(_localizationDemoTemplate, OnLocalize).Forget();
+			else
+				base.Localize();
 		}
 
 	#endif
